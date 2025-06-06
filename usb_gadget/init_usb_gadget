@@ -186,17 +186,17 @@ echo 0 > "${CONSUMER_FUNCTIONS_DIR}/subclass"
 echo 1 > "${CONSUMER_FUNCTIONS_DIR}/report_length"
 D=$(mktemp)
 {
-  echo -ne \\x05\\x0C       # Usage Page (Consumer Devices)
-  echo -ne \\x09\\x01       # Usage (Consumer Control)
-  echo -ne \\xA1\\x01       # Collection (Application)
-  echo -ne \\x15\\x00       #   Logical Minimum (0)
-  echo -ne \\x26\\xFF\\x03  #   Logical Maximum (1023)
-  echo -ne \\x19\\x00       #   Usage Minimum (0)
-  echo -ne \\x2A\\x14\\x05  #   Usage Maximum (Contact Misc. - 0x0514)
-  echo -ne \\x75\\x10       #   Report Size (16)
-  echo -ne \\x95\\x01       #   Report Count (1)
-  echo -ne \\x81\\x00       #   Input (Data, Array)
-  echo -ne \\xC0            # End Collection
+  echo -ne \\x05\\x0C       # USAGE_PAGE (Consumer Devices)
+  echo -ne \\x09\\x01       # USAGE (Consumer Control)
+  echo -ne \\xA1\\x01       # COLLECTION (Application)
+  echo -ne \\x15\\x00       #   LOGICAL_MINIMUM (0)
+  echo -ne \\x26\\xFF\\x03  #   LOGICAL_MAXIMUM (1023)
+  echo -ne \\x19\\x00       #   USAGE_MINIMUM (0)
+  echo -ne \\x2A\\x14\\x05  #   LOGICAL_MAXIMUM (Contact Misc. - 0x0514)
+  echo -ne \\x75\\x10       #   REPORT_SIZE (16)
+  echo -ne \\x95\\x01       #   REPORT_COUNT (1)
+  echo -ne \\x81\\x00       #   INPUT (Data, Array)
+  echo -ne \\xC0            # END_COLLECTION
 } >> "$D"
 cp "$D" "${CONSUMER_FUNCTIONS_DIR}/report_desc"
 
