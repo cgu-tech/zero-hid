@@ -1,8 +1,10 @@
+# zero_hid/hid/consumercodes.py
+
 from dataclasses import dataclass
 
 
 @dataclass
-class Consumercodes:
+class ConsumerCodes:
 
     def __getitem__(self, key):
         return getattr(self, key)
@@ -11,4 +13,4 @@ class Consumercodes:
     KEY_AC_BACK = 0x01
     KEY_AC_HOME = 0x02
 
-Consumercodes = Consumercodes()
+ConsumerCodes = ConsumerCodes()

@@ -23,7 +23,7 @@ class Consumer:
 
     def tap(self, key_code, delay=0):
         send_keystroke(self.dev, key_code, release=False)
-        time.sleep(delay)
+        sleep(delay)
         release_keys(self.dev)
 
     def _clean_resources(self):
