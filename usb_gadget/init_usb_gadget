@@ -178,29 +178,28 @@ echo -ne \\xC0           # END_COLLECTION
 cp "$D" "${MOUSE_ABSOLUTE_FUNCTIONS_DIR}/report_desc"
 
 # -------------------------
-# Consumer Page: AC Back
-CONSUMER_AC_BACK_FUNCTIONS_DIR="functions/hid.consumer_ac_back"
-mkdir -p "$CONSUMER_AC_BACK_FUNCTIONS_DIR"
-echo 0 > "${CONSUMER_AC_BACK_FUNCTIONS_DIR}/protocol"
-echo 0 > "${CONSUMER_AC_BACK_FUNCTIONS_DIR}/subclass"
-echo 4 > "${CONSUMER_AC_BACK_FUNCTIONS_DIR}/report_length"
-# Write the report descriptor for AC Back (usage 0x000C0224)
+# Consumer Control (AC Back, AC Home)
+CONSUMER_FUNCTIONS_DIR="functions/hid.consumer"
+mkdir -p "$CONSUMER_FUNCTIONS_DIR"
+echo 0 > "${CONSUMER_FUNCTIONS_DIR}/protocol"
+echo 0 > "${CONSUMER_FUNCTIONS_DIR}/subclass"
+echo 1 > "${CONSUMER_FUNCTIONS_DIR}/report_length"
 D=$(mktemp)
 {
   echo -ne \\x05\\x0C       # Usage Page (Consumer Devices)
-  echo -ne \\x0A\\x24\\x02  # Usage (AC Back, 0x0224)
+  echo -ne \\x09\\x01       # Usage (Consumer Control)
   echo -ne \\xA1\\x01       # Collection (Application)
-  echo -ne \\x15\\x00       # Logical Minimum (0)
-  echo -ne \\x25\\x01       # Logical Maximum (1)
-  echo -ne \\x75\\x01       # Report Size (1)
-  echo -ne \\x95\\x01       # Report Count (1)
-  echo -ne \\x81\\x06       # Input (Data,Var,Rel)
-  echo -ne \\x75\\x07       # Report Size (7)
-  echo -ne \\x95\\x01       # Report Count (1)
-  echo -ne \\x81\\x01       # Input (Const,Array,Abs)
+  echo -ne \\x15\\x00       #   Logical Minimum (0)
+  echo -ne \\x26\\xFF\\x03  #   Logical Maximum (1023)
+  echo -ne \\x19\\x00       #   Usage Minimum (0)
+  echo -ne \\x2A\\x24\\x02  #   Usage Maximum (AC Back - 0x0224)
+  echo -ne \\x75\\x10       #   Report Size (16)
+  echo -ne \\x95\\x01       #   Report Count (1)
+  echo -ne \\x81\\x00       #   Input (Data, Array)
   echo -ne \\xC0            # End Collection
 } >> "$D"
-cp "$D" "${CONSUMER_AC_BACK_FUNCTIONS_DIR}/report_desc"
+cp "$D" "${CONSUMER_FUNCTIONS_DIR}/report_desc"
+
 
 CONFIG_INDEX=1
 CONFIGS_DIR="configs/c.${CONFIG_INDEX}"
@@ -214,12 +213,12 @@ echo "Config ${CONFIG_INDEX}: ECM network" > "${CONFIGS_STRINGS_DIR}/configurati
 ln -s "$KEYBOARD_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_RELATIVE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_ABSOLUTE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
-ln -s "$CONSUMER_AC_BACK_FUNCTIONS_DIR" "${CONFIGS_DIR}/"   # Link new Consumer AC Back function
+ln -s "$CONSUMER_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 
 ls /sys/class/udc > UDC
 
 chmod 777 /dev/hidg0 # Keyboard
 chmod 777 /dev/hidg1 # Mouse Relative
 chmod 777 /dev/hidg2 # Mouse Absolute
-chmod 777 /dev/hidg3 # Consumer AC Back
+chmod 777 /dev/hidg3 # Consumer
 
