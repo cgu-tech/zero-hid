@@ -10,6 +10,14 @@ class ConsumerCodes:
     def __getitem__(self, key):
         return getattr(self, key)
 
+    @classmethod
+    def as_dict(cls):
+        return {
+            key: value
+            for key, value in vars(cls).items()
+            if key.isupper() and not key.startswith("__")
+        }
+
     CON_UNDEFINED = 0x0000
     CON_CONSUMER_CONTROL = 0x0001
     CON_NUMERIC_KEY_PAD = 0x0002
