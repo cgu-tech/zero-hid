@@ -13,7 +13,17 @@ sudo apt-get update
 sudo apt-get install -y git python3-pip python3-venv
 ```  
 
-2. install [usb gadget module](https://github.com/cgu-tech/zero-hid/tree/main/usb_gadget#usb-gadget-module-configuration-for-zero-hid)
+2. install usb gadget module
+
+Clone the repo
+```bash
+cd ~ && (sudo rm -rf zero-hid >/dev/null 2>&1 || true) && git clone -b main https://github.com/cgu-tech/zero-hid.git
+```
+
+Execute gadget `installer`
+```bash
+cd zero-hid/usb_gadget && sudo ./installer
+```
 
 3. Create virtual environment
 
