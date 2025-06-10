@@ -241,7 +241,55 @@
             "F21": [{"Modifiers": [], "Keys": ["KEY_F21"]}],
             "F22": [{"Modifiers": [], "Keys": ["KEY_F22"]}],
             "F23": [{"Modifiers": [], "Keys": ["KEY_F23"]}],
-            "F24": [{"Modifiers": [], "Keys": ["KEY_F24"]}]
+            "F24": [{"Modifiers": [], "Keys": ["KEY_F24"]}],
+            
+            "â": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP2","KEY_KP6"]}],
+            "á": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP0"]}],
+            "ã": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP2","KEY_KP7"]}],
+            "ä": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP3","KEY_KP2"]}],
+            "À": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP5","KEY_KP5"]}],
+            "Â": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP1","KEY_KP9","KEY_KP4"]}],
+            "Á": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP1","KEY_KP9","KEY_KP3"]}],
+            "Ã": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP1","KEY_KP9","KEY_KP5"]}],
+            "Ä": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP2"]}],
+
+            "ê": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP3","KEY_KP6"]}],
+            "ë": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP3","KEY_KP7"]}],
+            "É": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP4"]}],
+            "È": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP0"]}],
+            "Ê": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP2"]}],
+            "Ë": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP3"]}],
+
+            "û": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP5","KEY_KP0"]}],
+            "ü": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP2","KEY_KP9"]}],
+            "ú": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP3"]}],
+            "Ù": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP7"]}],
+            "Û": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP9"]}],
+            "Ü": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP5","KEY_KP4"]}],
+            "Ú": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP8"]}],
+
+            "î": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP0"]}],
+            "ï": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP3","KEY_KP9"]}],
+            "ì": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP1"]}],
+            "í": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP1"]}],
+            "Î": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP6"]}],
+            "Ï": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP7"]}],
+            "Ì": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP4"]}],
+            "Í": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP0","KEY_KP5"]}],
+
+            "ô": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP7"]}],
+            "ò": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP9"]}],
+            "ó": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP2"]}],
+            "õ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP4","KEY_KP5"]}],
+            "ö": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4","KEY_KP8"]}],
+            "Ô": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP2"]}],
+            "Ò": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP0"]}],
+            "Ó": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP1"]}],
+            "Õ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP2","KEY_KP1","KEY_KP3"]}],
+            "Ö": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP5","KEY_KP3"]}],
+
+            "ñ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP4"]}],
+            "Ñ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP5"]}]
     }
 }
 

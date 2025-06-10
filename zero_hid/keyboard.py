@@ -66,12 +66,16 @@ class Keyboard:
             keys = key_map["Keys"]
             mods = [KeyCodes[i] for i in mods]
             keys = [KeyCodes[i] for i in keys]
+            keys = deque(keys)
 
             if len(mods) == 1:
                 mods = mods[0]
             else:
                 mods = reduce(operator.or_, mods, 0)
-            send_keystroke(self.dev, mods, keys[0])
+
+            while len(keys) > 1:
+                send_keystroke(self.dev, mods, keys.popleft(), release=False)
+            send_keystroke(self.dev, mods, keys.popleft())
             sleep(delay)
 
     def press(self, mods: List[int], key_code: int = 0, release=True):
