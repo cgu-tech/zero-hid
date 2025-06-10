@@ -41,12 +41,9 @@ echo 8 > "${KEYBOARD_FUNCTIONS_DIR}/report_length"
 D=$(mktemp)
 
 {
-  # Keyboard part
   echo -ne \\x05\\x01       # Usage Page (Generic Desktop Ctrls)
   echo -ne \\x09\\x06       # Usage (Keyboard)
   echo -ne \\xA1\\x01       # Collection (Application)
-  
-  # LEDs output report
   echo -ne \\x05\\x08       #   Usage Page (LEDs)
   echo -ne \\x19\\x01       #   Usage Minimum (Num Lock)
   echo -ne \\x29\\x03       #   Usage Maximum (Scroll Lock)
@@ -55,32 +52,25 @@ D=$(mktemp)
   echo -ne \\x75\\x01       #   Report Size (1)
   echo -ne \\x95\\x03       #   Report Count (3)
   echo -ne \\x91\\x02       #   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-  
   echo -ne \\x09\\x4B       #   Usage (Generic Indicator)
   echo -ne \\x95\\x01       #   Report Count (1)
   echo -ne \\x91\\x02       #   Output (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-  
   echo -ne \\x95\\x04       #   Report Count (4)
   echo -ne \\x91\\x01       #   Output (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position,Non-volatile)
-  
-  # Keyboard input report keys
   echo -ne \\x05\\x07       #   Usage Page (Kbrd/Keypad)
   echo -ne \\x19\\xE0       #   Usage Minimum (0xE0)
   echo -ne \\x29\\xE7       #   Usage Maximum (0xE7)
   echo -ne \\x95\\x08       #   Report Count (8)
   echo -ne \\x81\\x02       #   Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-  
   echo -ne \\x75\\x08       #   Report Size (8)
   echo -ne \\x95\\x01       #   Report Count (1)
   echo -ne \\x81\\x01       #   Input (Const,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
-  
   echo -ne \\x19\\x00       #   Usage Minimum (0x00)
   echo -ne \\x29\\x91       #   Usage Maximum (0x91)
   echo -ne \\x26\\xFF\\x00  #   Logical Maximum (255)
   echo -ne \\x95\\x06       #   Report Count (6)
   echo -ne \\x81\\x00       #   Input (Data,Array,Abs,No Wrap,Linear,Preferred State,No Null Position)
-  
-  echo -ne \\xC0            # End Collection (Keyboard)
+  echo -ne \\xC0            # End Collection
 } >> "$D"
 cp "$D" "${KEYBOARD_FUNCTIONS_DIR}/report_desc"
 
@@ -187,30 +177,6 @@ echo -ne \\xC0           # END_COLLECTION
 } >> "$D"
 cp "$D" "${MOUSE_ABSOLUTE_FUNCTIONS_DIR}/report_desc"
 
-
-CONSUMER_FUNCTIONS_DIR="functions/hid.consumer"
-mkdir -p "$CONSUMER_FUNCTIONS_DIR"
-echo 0 > "${CONSUMER_FUNCTIONS_DIR}/protocol"
-echo 0 > "${CONSUMER_FUNCTIONS_DIR}/subclass"
-echo 2 > "${CONSUMER_FUNCTIONS_DIR}/report_length"  # 2 bytes for 16-bit usage
-
-D=$(mktemp)
-{
-  # Consumer Control part
-  echo -ne \\x05\\x0C       # Usage Page (Consumer Devices)
-  echo -ne \\x09\\x01       # Usage (Consumer Control)
-  echo -ne \\xA1\\x01       # Collection (Application)
-
-  echo -ne \\x15\\x00       #   Logical Minimum (0)
-  echo -ne \\x26\\xFF\\xFF  #   Logical Maximum (65535)
-  echo -ne \\x75\\x10       #   Report Size (16)
-  echo -ne \\x95\\x01       #   Report Count (1)
-  echo -ne \\x81\\x00       #   Input (Data,Array,Abs)
-
-  echo -ne \\xC0            # End Collection
-} >> "$D"
-cp "$D" "${CONSUMER_FUNCTIONS_DIR}/report_desc"
-
 CONFIG_INDEX=1
 CONFIGS_DIR="configs/c.${CONFIG_INDEX}"
 mkdir -p "$CONFIGS_DIR"
@@ -223,11 +189,9 @@ echo "Config ${CONFIG_INDEX}: ECM network" > "${CONFIGS_STRINGS_DIR}/configurati
 ln -s "$KEYBOARD_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_RELATIVE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_ABSOLUTE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
-ln -s "$CONSUMER_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ls /sys/class/udc > UDC
 
 chmod 777 /dev/hidg0 # Keyboard
 chmod 777 /dev/hidg1 # Mouse Relative
 chmod 777 /dev/hidg2 # Mouse Absolute
-chmod 777 /dev/hidg3 # Consumer
 
