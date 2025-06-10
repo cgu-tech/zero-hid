@@ -289,7 +289,28 @@
             "Ö": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP5","KEY_KP3"]}],
 
             "ñ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP4"]}],
-            "Ñ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP5"]}]
+            "Ñ": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP5"]}],
+            
+            "¨": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP1","KEY_KP6","KEY_KP8"]}],
+            "¥": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP5","KEY_KP7"]}],
+            "÷": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP4","KEY_KP6"]}],
+            "π": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP2","KEY_KP7"]}],
+
+            "∙": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP4","KEY_KP9"]}],
+            "○": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP9"]}],
+            "•": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP7"]}],
+            "♫": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP4"]}],
+            "■": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP5","KEY_KP4"]}],
+            "♠": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP6"]}],
+            "♥": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP3"]}],
+            "♦": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP4"]}],
+            "♣": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP5"]}],
+            "√": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP5","KEY_KP1"]}],
+            "≈": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP4","KEY_KP7"]}],
+            "≤": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP4","KEY_KP3"]}],
+            "≥": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP2","KEY_KP4","KEY_KP2"]}],
+            "¡": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP0","KEY_KP1","KEY_KP6","KEY_KP1"]}],
+            "¿": [{"Modifiers": ["MOD_LEFT_ALT"], "Keys": ["KEY_KP1","KEY_KP6","KEY_KP8"]}]
     }
 }
 
