@@ -177,6 +177,30 @@ echo -ne \\xC0           # END_COLLECTION
 } >> "$D"
 cp "$D" "${MOUSE_ABSOLUTE_FUNCTIONS_DIR}/report_desc"
 
+# -------------------------
+# Consumer Control (AC Back, AC Home)
+CONSUMER_FUNCTIONS_DIR="functions/hid.consumer"
+mkdir -p "$CONSUMER_FUNCTIONS_DIR"
+echo 0 > "${CONSUMER_FUNCTIONS_DIR}/protocol"
+echo 0 > "${CONSUMER_FUNCTIONS_DIR}/subclass"
+echo 1 > "${CONSUMER_FUNCTIONS_DIR}/report_length"
+D=$(mktemp)
+{
+  echo -ne \\x05\\x0C       # USAGE_PAGE (Consumer Devices)
+  echo -ne \\x09\\x01       # USAGE (Consumer Control)
+  echo -ne \\xA1\\x01       # COLLECTION (Application)
+  echo -ne \\x15\\x00       #   LOGICAL_MINIMUM (0)
+  echo -ne \\x26\\xFF\\x03  #   LOGICAL_MAXIMUM (1023)
+  echo -ne \\x19\\x00       #   USAGE_MINIMUM (0)
+  echo -ne \\x2A\\x14\\x05  #   LOGICAL_MAXIMUM (Contact Misc. - 0x0514)
+  echo -ne \\x75\\x10       #   REPORT_SIZE (16)
+  echo -ne \\x95\\x01       #   REPORT_COUNT (1)
+  echo -ne \\x81\\x00       #   INPUT (Data, Array)
+  echo -ne \\xC0            # END_COLLECTION
+} >> "$D"
+cp "$D" "${CONSUMER_FUNCTIONS_DIR}/report_desc"
+
+
 CONFIG_INDEX=1
 CONFIGS_DIR="configs/c.${CONFIG_INDEX}"
 mkdir -p "$CONFIGS_DIR"
@@ -189,9 +213,12 @@ echo "Config ${CONFIG_INDEX}: ECM network" > "${CONFIGS_STRINGS_DIR}/configurati
 ln -s "$KEYBOARD_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_RELATIVE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_ABSOLUTE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
+ln -s "$CONSUMER_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
+
 ls /sys/class/udc > UDC
 
 chmod 777 /dev/hidg0 # Keyboard
 chmod 777 /dev/hidg1 # Mouse Relative
 chmod 777 /dev/hidg2 # Mouse Absolute
+chmod 777 /dev/hidg3 # Consumer
 
