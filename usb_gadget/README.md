@@ -6,14 +6,10 @@ it's necessary to change some configuration on the kernel.
 ### Install / remove the module
 clone the repo if you haven't yet
 ```bash
-git clone https://github.com/thewh1teagle/zero-hid
+cd ~ && (sudo rm -rf zero-hid >/dev/null 2>&1 || true) && git clone -b main https://github.com/cgu-tech/zero-hid.git
 ```
 
-get into usb_gadget folder
-```bash
-cd zero-hid/usb_gadget
-```
 Execute `installer`
 ```bash
-sudo ./installer
+cd zero-hid/usb_gadget && sudo ./installer
 ```
