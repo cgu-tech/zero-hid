@@ -215,6 +215,9 @@ ln -s "$MOUSE_RELATIVE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$MOUSE_ABSOLUTE_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 ln -s "$CONSUMER_FUNCTIONS_DIR" "${CONFIGS_DIR}/"
 
+if [ -f UDC ]; then
+  echo "" > UDC
+fi
 ls /sys/class/udc > UDC
 
 chmod 777 /dev/hidg0 # Keyboard
