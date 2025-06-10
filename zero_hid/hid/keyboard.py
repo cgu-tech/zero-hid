@@ -4,7 +4,7 @@ import select
 
 
 def send_keystroke(keyboard_path, control_keys, hid_keycode, release=True):
-    buf = [0] * 8
+    buf = [0] * 10
     buf[0] = control_keys
     buf[2] = hid_keycode
     hid_write.write_to_hid_interface(keyboard_path, buf)
@@ -28,4 +28,4 @@ def read_last_report(keyboard: "BufferedReader", size: int):
 
 
 def release_keys(keyboard_path):
-    hid_write.write_to_hid_interface(keyboard_path, [0] * 8)
+    hid_write.write_to_hid_interface(keyboard_path, [0] * 10)
