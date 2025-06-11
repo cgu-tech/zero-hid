@@ -75,9 +75,13 @@ class Keyboard:
                 mods = reduce(operator.or_, mods, 0)
 
             while len(keys) > 0:
-                send_keystroke(self.dev, mods, keys.popleft(), release=False)
+                key = keys.popleft()
+                send_keystroke(self.dev, mods, key, release=False)
+                print(f"send_keystroke->mods:{mods},key:{key},release=False")
             if should_release:
-                send_keystroke(self.dev, mods, 0)
+                key = 0
+                send_keystroke(self.dev, mods, key, release=True)
+                print(f"send_keystroke->mods:{mods},key:{key},release=True")
             sleep(delay)
 
     def press(self, mods: List[int], key_code: int = 0, release=True):
