@@ -66,26 +66,20 @@ class Keyboard:
             keys = key_map["Keys"]
             mods = [KeyCodes[i] for i in mods]
             keys = [KeyCodes[i] for i in keys]
-            should_release = len(mods) > 0 or len(keys) > 0
-            keys = deque(keys)
 
             if len(mods) == 1:
                 mods = mods[0]
             else:
                 mods = reduce(operator.or_, mods, 0)
 
-            if len(keys) > 0:
-                key = 0
-                send_keystroke(self.dev, mods, key, release=False)
-                print(f"send_keystroke->mods:{mods},key:{key},release=False")
-            while len(keys) > 0:
+            keys = deque(keys)
+            while len(keys) > 1:
                 key = keys.popleft()
                 send_keystroke(self.dev, mods, key, release=False)
                 print(f"send_keystroke->mods:{mods},key:{key},release=False")
-            if should_release:
-                key = 0
-                send_keystroke(self.dev, mods, key, release=True)
-                print(f"send_keystroke->mods:{mods},key:{key},release=True")
+            key = keys.popleft() if len(keys) > 0 else 0
+            send_keystroke(self.dev, mods, key, release=True)
+            print(f"send_keystroke->mods:{mods},key:{key},release=True")
             sleep(delay)
 
     def press(self, mods: List[int], key_code: int = 0, release=True):
