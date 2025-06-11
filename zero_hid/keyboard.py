@@ -74,6 +74,10 @@ class Keyboard:
             else:
                 mods = reduce(operator.or_, mods, 0)
 
+            if len(keys) > 0:
+                key = 0
+                send_keystroke(self.dev, mods, key, release=False)
+                print(f"send_keystroke->mods:{mods},key:{key},release=False")
             while len(keys) > 0:
                 key = keys.popleft()
                 send_keystroke(self.dev, mods, key, release=False)
