@@ -11,7 +11,7 @@ import pkgutil
 import os
 import pathlib
 from typing import TypedDict
-
+from collections import deque
 
 class LEDState(TypedDict):
     num_lock: bool
