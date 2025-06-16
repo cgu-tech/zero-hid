@@ -70,7 +70,7 @@ class Keyboard:
                 # Retrieve combo modifiers and keys names
                 mods = combo["Modifiers"]
                 keys = combo["Keys"]
-                print(f"combo->mods:{mods},keys:{key}")
+                print(f"combo->mods:{mods},keys:{keys}")
 
                 # Retrieve combo modifiers and keys codes
                 mods = [KeyCodes[i] for i in mods]
