@@ -12,8 +12,6 @@ def relative_mouse_event(
         y & 0xFF,
         vertical_wheel_delta & 0xFF,
         horizontal_wheel_delta & 0xFF,
-        0x00,
-        0x00,
     ]
     hid_write.write_to_hid_interface(dev, buf)
 
