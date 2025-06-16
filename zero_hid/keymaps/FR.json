@@ -242,7 +242,7 @@
             "F22": [{"Modifiers": [], "Keys": ["KEY_F22"]}],
             "F23": [{"Modifiers": [], "Keys": ["KEY_F23"]}],
             "F24": [{"Modifiers": [], "Keys": ["KEY_F24"]}],
-            
+
             "â": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE","KEY_Q"]}],
             "ã": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": [], "Keys": ["KEY_Q"]}],
             "ä": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_Q"]}],
@@ -282,7 +282,7 @@
             "ÿ": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_Y"]}],
 
             "ñ": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": [], "Keys": ["KEY_N"]}],
-            "Ñ": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_N"]}],
+            "Ñ": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_N"]}]
     }
 }
 
