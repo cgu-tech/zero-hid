@@ -60,27 +60,42 @@ class Keyboard:
 
     def type(self, text, delay=0):
         for c in text:
-            key_map = self.layout["Mapping"][c]
-            key_map = key_map[0]
-            mods = key_map["Modifiers"]
-            keys = key_map["Keys"]
-            mods = [KeyCodes[i] for i in mods]
-            keys = [KeyCodes[i] for i in keys]
+            kb_map = self.layout["Mapping"][c]
+            if kb_map is None:
+                raise ValueError(f"No mapping found for character: {c}")
 
-            if len(mods) == 1:
-                mods = mods[0]
-            else:
-                mods = reduce(operator.or_, mods, 0)
+            # A single char may need one or multiple key combos
+            for combo in kb_map:
 
-            keys = deque(keys)
-            while len(keys) > 1:
-                key = keys.popleft()
-                send_keystroke(self.dev, mods, key, release=False)
-                print(f"send_keystroke->mods:{mods},key:{key},release=False")
-            key = keys.popleft() if len(keys) > 0 else 0
-            send_keystroke(self.dev, mods, key, release=True)
-            print(f"send_keystroke->mods:{mods},key:{key},release=True")
-            sleep(delay)
+                # Retrieve combo modifiers and keys names
+                mods = combo["Modifiers"]
+                keys = combo["Keys"]
+                print(f"combo->mods:{mods},keys:{key}")
+
+                # Retrieve combo modifiers and keys codes
+                mods = [KeyCodes[i] for i in mods]
+                keys = [KeyCodes[i] for i in keys]
+
+                # Reduce modifiers to one byte
+                if len(mods) == 1:
+                    mods = mods[0]
+                else:
+                    mods = reduce(operator.or_, mods, 0)
+
+                # Send (1st)..(N-1th) keys + all modifiers
+                keys = deque(keys)
+                while len(keys) > 1:
+                    key = keys.popleft()
+                    send_keystroke(self.dev, mods, key, release=False)
+                    print(f"send_keystroke->mods:{mods},key:{key},release=False")
+
+                # Send (Nth) key + all modifiers
+                key = keys.popleft() if len(keys) > 0 else 0
+                send_keystroke(self.dev, mods, key, release=True)
+                print(f"send_keystroke->mods:{mods},key:{key},release=True")
+
+            if delay > 0:
+                sleep(delay)
 
     def press(self, mods: List[int], key_code: int = 0, release=True):
         if len(mods) == 1:
