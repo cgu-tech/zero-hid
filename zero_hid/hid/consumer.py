@@ -19,5 +19,6 @@ def send_keystroke(consumer_path, hid_keycode, release=True) -> None:
         release_keys(consumer_path)
 
 def release_keys(consumer_path):
-    buf = [CONSUMER_REPORT_ID, 0x00, 0x00]
+    buf = [0] * 8
+    buf[0] = CONSUMER_REPORT_ID
     hid_write.write_to_hid_interface(consumer_path, buf)
