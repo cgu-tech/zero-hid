@@ -5,7 +5,7 @@ from . import write as hid_write
 CONSUMER_REPORT_ID = 0x02  # Report ID for Consumer Control
 
 def send_keystroke(consumer_path, hid_keycode, release=True) -> None:
-    buf = [0] * 8
+    buf = [0] * 3
     buf[0] = CONSUMER_REPORT_ID        # Report ID
     #buf[1] = (hid_keycode >> 8) & 0xFF # LSB
     #buf[2] = hid_keycode & 0xFF        # MSB
@@ -19,6 +19,6 @@ def send_keystroke(consumer_path, hid_keycode, release=True) -> None:
         release_keys(consumer_path)
 
 def release_keys(consumer_path):
-    buf = [0] * 8
+    buf = [0] * 3
     buf[0] = CONSUMER_REPORT_ID
     hid_write.write_to_hid_interface(consumer_path, buf)
