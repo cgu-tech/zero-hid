@@ -4,7 +4,9 @@ from . import write as hid_write
 def relative_mouse_event(
     dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta, absolute=False
 ):
+    REPORT_ID = 0x01  # Report ID for mouse relative report
     buf = [
+        REPORT_ID,
         buttons,
         x & 0xFF,
         y & 0xFF,
