@@ -4,6 +4,7 @@ import typing
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 logger = logging.getLogger(__name__)
+print(logger.name)
 
 class Error(Exception):
     pass
