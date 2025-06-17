@@ -1,31 +1,61 @@
 from . import write as hid_write
 
+MOUSE_REPORT_ID     = 0x02  # Report ID for Mouse
 
-def relative_mouse_event(
-    dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta, absolute=False
-):
-    REPORT_ID = 0x01  # Report ID for mouse relative report
-    buf = [
-        REPORT_ID,
-        buttons,
-        x & 0xFF,
-        y & 0xFF,
-        vertical_wheel_delta & 0xFF,
-        horizontal_wheel_delta & 0xFF,
-    ]
+MOUSE_BUTTON_LEFT   = 0x01  # Mouse button code left
+MOUSE_BUTTON_RIGHT  = 0x02  # Mouse button code right
+MOUSE_BUTTON_MIDDLE = 0x04  # Mouse button code middle
+
+def pack_signed_12bit(value):
+    """Pack a signed integer value into 12 bits 2's complement."""
+    if not (-2047 <= value <= 2047):
+        raise ValueError("Value out of 12-bit signed range")
+    if value < 0:
+        value = (1 << 12) + value  # 2's complement
+    return value
+
+def reduce_values(values: List[int]):
+    if len(values) == 1:
+        values = values[0]
+    else:
+        values = reduce(operator.or_, values, 0)
+    return value
+
+def relative_mouse_event(dev, buttons: List[int], x, y, vertical_wheel_delta, horizontal_wheel_delta, absolute=False):
+    # Create Mouse report buffer
+    buf = [0] * 8
+
+    # Report ID 2: 8 bits (1 byte)
+    buf[0] = MOUSE_REPORT_ID                 
+
+    # Buttons: 16 bits (2 bytes)
+    buttons = reduce_values(buttons)
+    buf[1] = buttons & 0xFF          # Low byte buttons
+    buf[2] = (buttons >> 8) & 0xFF   # High byte buttons
+
+    # Pack signed 12-bit X and Y
+    x12 = pack_signed_12bit(x)
+    y12 = pack_signed_12bit(y)
+
+    # X: 12 bits, bits 0-7 in buf[3], bits 8-11 in lower nibble of buf[4]
+    buf[3] = x12 & 0xFF
+    buf[4] = (x12 >> 8) & 0x0F
+
+    # Y: 12 bits, bits 0-3 in upper nibble of buf[4], bits 4-11 in buf[5]
+    buf[4] |= (y12 & 0x0F) << 4
+    buf[5] = (y12 >> 4) & 0xFF
+
+    # Wheel and AC Pan (8-bit signed values)
+    buf[6] = vertical_wheel_delta & 0xFF
+    buf[7] = horizontal_wheel_delta & 0xFF
+
+    # Write the buffer to HID device
     hid_write.write_to_hid_interface(dev, buf)
 
 
 def absolute_mouse_event(
     dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta
 ):
-    buf = [
-        buttons,
-        x & 0xFF,
-        (x >> 8) & 0xFF,  # Extract the upper byte of x
-        y & 0xFF,
-        (y >> 8) & 0xFF,  # Extract the upper byte of y
-        vertical_wheel_delta & 0xFF,
-        horizontal_wheel_delta & 0xFF,
-    ]
-    hid_write.write_to_hid_interface(dev, buf)
+    buf = [0] * 1
+    #TODO: remove this useless part
+    #hid_write.write_to_hid_interface(dev, buf)
