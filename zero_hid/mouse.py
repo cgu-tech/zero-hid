@@ -1,6 +1,7 @@
 from . import defaults
 from .hid.mouse import relative_mouse_event, absolute_mouse_event
 from typing import SupportsInt
+from functools import reduce
 
 
 class RelativeMoveRangeError(Exception):
