@@ -5,7 +5,7 @@ from common import read_bytes, temp_path
 
 def test_mouse_button_left():
     with temp_path() as dev_path:
-        with open(dev_path, "r+b") as dev:
+        with open(dev_path, "w+b") as dev:
             buttons = [MOUSE_BUTTON_LEFT]
             x = 0
             y = 0
