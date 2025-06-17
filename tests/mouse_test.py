@@ -120,7 +120,6 @@ def test_mouse_button_midle_and_right():
             data = dev.read()
     assert b"\x02\x06\x00\x00\x00\x00\x00\x00" == data
 
-
 def test_mouse_move_x_minus16_y1():
     with temp_path() as dev_path:
         with open(dev_path, "w+b") as dev:
@@ -133,6 +132,32 @@ def test_mouse_move_x_minus16_y1():
             dev.seek(0)
             data = dev.read()
     assert data == b"\x02\x00\x00\xf0\x1f\x00\x00\x00"
+
+def test_mouse_move_x_minus18_y1():
+    with temp_path() as dev_path:
+        with open(dev_path, "w+b") as dev:
+            buttons = []
+            x = -18
+            y = 1
+            vertical_wheel_delta = 0
+            horizontal_wheel_delta = 0
+            relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
+            dev.seek(0)
+            data = dev.read()
+    assert data == b"\x02\x00\x00\xee\x1f\x00\x00\x00"
+
+def test_mouse_move_x0_y1():
+    with temp_path() as dev_path:
+        with open(dev_path, "w+b") as dev:
+            buttons = []
+            x = -18
+            y = 1
+            vertical_wheel_delta = 0
+            horizontal_wheel_delta = 0
+            relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
+            dev.seek(0)
+            data = dev.read()
+    assert data == b"\x02\x00\x00\x00\x10\x00\x00\x00"
 
 def test_mouse_movement_only():
     with temp_path() as dev_path:
