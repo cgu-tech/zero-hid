@@ -1,5 +1,6 @@
 from . import write as hid_write
 from typing import List
+from functools import reduce
 
 MOUSE_REPORT_ID     = 0x02  # Report ID for Mouse
 
