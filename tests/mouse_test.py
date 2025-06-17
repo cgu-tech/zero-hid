@@ -12,7 +12,7 @@ def test_mouse_button_left():
             vertical_wheel_delta = 0
             horizontal_wheel_delta = 0
             relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
-            f.seek(0)
-            data = f.read()
+            dev.seek(0)
+            data = dev.read()
     assert b"\x02\x00\x01\x00\x00\x00\x00\x00" == data
 
