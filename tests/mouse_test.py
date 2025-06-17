@@ -4,14 +4,14 @@ from common import read_bytes, temp_path
 
 
 def test_mouse_button_left():
-    with temp_path() as p:
-        with open(path, "r+b") as f:
+    with temp_path() as dev_path:
+        with open(dev_path, "r+b") as dev:
             buttons = [MOUSE_BUTTON_LEFT]
             x = 0
             y = 0
             vertical_wheel_delta = 0
             horizontal_wheel_delta = 0
-            relative_mouse_event(p, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
+            relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
             f.seek(0)
             data = f.read()
     assert b"\x02\x00\x01\x00\x00\x00\x00\x00" == data
