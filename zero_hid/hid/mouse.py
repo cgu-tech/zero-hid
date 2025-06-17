@@ -20,7 +20,7 @@ def reduce_values(values: List[int]):
         values = values[0]
     else:
         values = reduce(operator.or_, values, 0)
-    return value
+    return values
 
 def relative_mouse_event(dev, buttons: List[int], x, y, vertical_wheel_delta, horizontal_wheel_delta, absolute=False):
     # Create Mouse report buffer
