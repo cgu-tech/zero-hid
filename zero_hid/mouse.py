@@ -1,6 +1,6 @@
 from . import defaults
 from .hid.mouse import raise_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
-from typing import SupportsInt
+from typing import SupportsInt, List
 
 
 MOUSE_BUTTONS_NONE   = []  # No mouse buttons
