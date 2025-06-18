@@ -10,6 +10,8 @@ def get_relative_mouse_event_data(buttons, x, y, vertical_wheel_delta, horizonta
             data = dev.read()
     return data
 
+# Test mouse identity
+
 def test_identity_report():
     data = get_relative_mouse_event_data([], 0, 0, 0, 0)
     assert data == b"\x02\x00\x00\x00\x00\x00\x00\x00"
@@ -331,7 +333,7 @@ def test_vertical_scroll_3():
 # Tests horizontal scroll
 
 def test_horizontal_scroll_minus3():
-    data = get_relative_mouse_event_data([], 0, 0, -3, 0)
+    data = get_relative_mouse_event_data([], 0, 0, 0, -3)
     assert data == b"\x02\x00\x00\x00\x00\x00\x00\xfd"
 
 def test_horizontal_scroll_minus2():
