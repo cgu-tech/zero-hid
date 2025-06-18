@@ -4,7 +4,6 @@ import operator
 from typing import List
 
 MOUSE_REPORT_ID     = 0x02  # Report ID for Mouse
-
 MOUSE_BUTTON_LEFT   = 0x01  # Mouse button code left
 MOUSE_BUTTON_RIGHT  = 0x02  # Mouse button code right
 MOUSE_BUTTON_MIDDLE = 0x04  # Mouse button code middle
@@ -24,7 +23,7 @@ def reduce_values(values: List[int]):
         values = reduce(operator.or_, values, 0)
     return values
 
-def relative_mouse_event(dev, buttons: List[int], x, y, vertical_wheel_delta, horizontal_wheel_delta, absolute=False):
+def raise_mouse_event(dev, buttons: List[int], x, y, vertical_wheel_delta, horizontal_wheel_delta, absolute=False):
     # Create Mouse report buffer
     buf = [0] * 8
 
@@ -54,11 +53,3 @@ def relative_mouse_event(dev, buttons: List[int], x, y, vertical_wheel_delta, ho
 
     # Write the buffer to HID device
     hid_write.write_to_hid_interface(dev, buf)
-
-
-def absolute_mouse_event(
-    dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta
-):
-    buf = [0] * 1
-    #TODO: remove this useless part
-    #hid_write.write_to_hid_interface(dev, buf)
