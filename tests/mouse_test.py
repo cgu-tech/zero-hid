@@ -302,61 +302,58 @@ def test_mouse_move_x_127_y_minus21():
     data = get_relative_mouse_event_data([], 127, -21, 0, 0)
     assert data == b"\x02\x00\x00\x7f\xb0\xfe\x00\x00"
 
-# Tests vertical wheel
+# Tests vertical scroll
 
-def test_vertical_wheel_1():
-    data = get_relative_mouse_event_data([], 0, 0, 1, 0)
-    assert data == b"\x02\x00\x00\x00\x00\x00\x01\x00"
-
-def test_vertical_wheel_2():
-    data = get_relative_mouse_event_data([], 0, 0, 2, 0)
-    assert data == b"\x02\x00\x00\x00\x00\x00\x02\x00"
-
-def test_vertical_wheel_3():
-    data = get_relative_mouse_event_data([], 0, 0, 3, 0)
-    assert data == b"\x02\x00\x00\x00\x00\x00\x03\x00"
-
-def test_vertical_wheel_minus1():
-    data = get_relative_mouse_event_data([], 0, 0, -1, 0)
-    assert data == b"\x02\x00\x00\x00\x00\x00\xff\x00"
-
-def test_vertical_wheel_minus2():
-    data = get_relative_mouse_event_data([], 0, 0, -2, 0)
-    assert data == b"\x02\x00\x00\x00\x00\x00\xfe\x00"
-
-def test_vertical_wheel_minus4():
+def test_vertical_scroll_minus4():
     data = get_relative_mouse_event_data([], 0, 0, -4, 0)
     assert data == b"\x02\x00\x00\x00\x00\x00\xfc\x00"
 
-#def test_horizontal_wheel_only():
-#    with temp_path() as dev_path:
-#        with open(dev_path, "w+b") as dev:
-#            buttons = []
-#            x = 0
-#            y = 0
-#            vertical_wheel_delta = 0
-#            horizontal_wheel_delta = -1  # Scroll left 1 unit (two's complement)
-#            relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
-#            dev.seek(0)
-#            data = dev.read()
-#    # Horizontal wheel delta encoded at 6th byte
-#    assert data == b"\x02\x00\x00\x00\x00\x00\x00\x00"
-#
-#def test_buttons_movement_and_wheel():
-#    with temp_path() as dev_path:
-#        with open(dev_path, "w+b") as dev:
-#            buttons = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE]
-#            x = -20
-#            y = 15
-#            vertical_wheel_delta = -2
-#            horizontal_wheel_delta = 3
-#            relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
-#            dev.seek(0)
-#            data = dev.read()
-#    # Button mask: 0x01 (left) + 0x04 (middle) = 0x05
-#    # x = -20 -> 0xec (two's complement)
-#    # y = 15 -> 0x0f
-#    # vertical_wheel_delta = -2 -> 0xfe
-#    # horizontal_wheel_delta = 3 -> 0x03
-#    assert data == b"\x02\x05\xec\x0f\xfe\x03\x00\x00"
+def test_vertical_scroll_minus2():
+    data = get_relative_mouse_event_data([], 0, 0, -2, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\xfe\x00"
 
+def test_vertical_scroll_minus1():
+    data = get_relative_mouse_event_data([], 0, 0, -1, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\xff\x00"
+
+def test_vertical_scroll_1():
+    data = get_relative_mouse_event_data([], 0, 0, 1, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x01\x00"
+
+def test_vertical_scroll_2():
+    data = get_relative_mouse_event_data([], 0, 0, 2, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x02\x00"
+
+def test_vertical_scroll_3():
+    data = get_relative_mouse_event_data([], 0, 0, 3, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x03\x00"
+
+# Tests horizontal scroll
+
+def test_horizontal_scroll_minus3():
+    data = get_relative_mouse_event_data([], 0, 0, -3, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\xfd"
+
+def test_horizontal_scroll_minus2():
+    data = get_relative_mouse_event_data([], 0, 0, 0, -2)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\xfe"
+
+def test_horizontal_scroll_minus1():
+    data = get_relative_mouse_event_data([], 0, 0, 0, -1)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\xff"
+
+def test_horizontal_scroll_1():
+    data = get_relative_mouse_event_data([], 0, 0, 0, 1)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\x01"
+
+def test_horizontal_scroll_2():
+    data = get_relative_mouse_event_data([], 0, 0, 0, 2)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\x02"
+
+def test_horizontal_scroll_3():
+    data = get_relative_mouse_event_data([], 0, 0, 0, 3)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\x03"
+
+def test_horizontal_scroll_4():
+    data = get_relative_mouse_event_data([], 0, 0, 0, 4)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\x04"
