@@ -54,6 +54,22 @@ def test_mouse_button_midle_and_right():
 
 # Tests move X
 
+def test_mouse_move_x_minus73_y_0():
+    data = get_relative_mouse_event_data([], -73, 0, 0, 0)
+    assert data == b"\x02\x00\x00\xb7\x0f\x00\x00\x00"
+
+def test_mouse_move_x_minus70_y_0():
+    data = get_relative_mouse_event_data([], -70, 0, 0, 0)
+    assert data == b"\x02\x00\x00\xba\x0f\x00\x00\x00"
+
+def test_mouse_move_x_minus61_y_0():
+    data = get_relative_mouse_event_data([], -61, 0, 0, 0)
+    assert data == b"\x02\x00\x00\xc3\x0f\x00\x00\x00"
+
+def test_mouse_move_x_minus10_y_0():
+    data = get_relative_mouse_event_data([], -10, 0, 0, 0)
+    assert data == b"\x02\x00\x00\xf6\x0f\x00\x00\x00"
+
 def test_mouse_move_x_1_y_0():
     data = get_relative_mouse_event_data([], 1, 0, 0, 0)
     assert data == b"\x02\x00\x00\x01\x00\x00\x00\x00"
@@ -88,6 +104,30 @@ def test_mouse_move_x_8_y_0():
 
 # Tests move Y
 
+def test_mouse_move_x_0_y_minus55():
+    data = get_relative_mouse_event_data([], 0, -55, 0, 0)
+    assert data == b"\x02\x00\x00\x00\x90\xfc\x00\x00"
+
+def test_mouse_move_x_0_y_minus54():
+    data = get_relative_mouse_event_data([], 0, -54, 0, 0)
+    assert data == b"\x02\x00\x00\x00\xa0\xfc\x00\x00"
+
+def test_mouse_move_x_0_y_minus51():
+    data = get_relative_mouse_event_data([], 0, -51, 0, 0)
+    assert data == b"\x02\x00\x00\x00\xd0\xfc\x00\x00"
+
+def test_mouse_move_x_0_y_minus50():
+    data = get_relative_mouse_event_data([], 0, -50, 0, 0)
+    assert data == b"\x02\x00\x00\x00\xe0\xfc\x00\x00"
+
+def test_mouse_move_x_0_y_minus46():
+    data = get_relative_mouse_event_data([], 0, -46, 0, 0)
+    assert data == b"\x02\x00\x00\x00\x20\xfd\x00\x00"
+
+def test_mouse_move_x_0_y_minus7():
+    data = get_relative_mouse_event_data([], 0, -7, 0, 0)
+    assert data == b"\x02\x00\x00\x00\x90\xfe\x00\x00"
+
 def test_mouse_move_x_0_y_1():
     data = get_relative_mouse_event_data([], 0, 1, 0, 0)
     assert data == b"\x02\x00\x00\x00\x10\x00\x00\x00"
@@ -101,6 +141,46 @@ def test_mouse_move_x_0_y_62():
     assert data == b"\x02\x00\x00\x00\xe0\x03\x00\x00"
 
 # Tests move X and Y
+
+def test_mouse_move_x_minus77_y_minus1():
+    data = get_relative_mouse_event_data([], -77, -1, 0, 0)
+    assert data == b"\x02\x00\x00\xb3\xff\xff\x00\x00"
+
+def test_mouse_move_x_minus77_y_minus1():
+    data = get_relative_mouse_event_data([], -68, -1, 0, 0)
+    assert data == b"\x02\x00\x00\xbc\xff\xff\x00\x00"
+
+def test_mouse_move_x_minus67_y_minus2():
+    data = get_relative_mouse_event_data([], -67, -2, 0, 0)
+    assert data == b"\x02\x00\x00\xbd\xef\xff\x00\x00"
+
+def test_mouse_move_x_minus66_y_2():
+    data = get_relative_mouse_event_data([], -60, 2, 0, 0)
+    assert data == b"\x02\x00\x00\xbe\x2f\x00\x00\x00"
+
+def test_mouse_move_x_minus60_y_minus3():
+    data = get_relative_mouse_event_data([], -60, -3, 0, 0)
+    assert data == b"\x02\x00\x00\xc4\xdf\xff\x00\x00"
+
+def test_mouse_move_x_minus54_y_minus2():
+    data = get_relative_mouse_event_data([], -54, -2, 0, 0)
+    assert data == b"\x02\x00\x00\xca\xef\xff\x00\x00"
+
+def test_mouse_move_x_minus53_y_1():
+    data = get_relative_mouse_event_data([], -53, 1, 0, 0)
+    assert data == b"\x02\x00\x00\xcb\x1f\x00\x00\x00"
+
+def test_mouse_move_x_minus48_y_1():
+    data = get_relative_mouse_event_data([], -48, 1, 0, 0)
+    assert data == b"\x02\x00\x00\xd0\x1f\x00\x00\x00"
+
+def test_mouse_move_x_minus43_y_2():
+    data = get_relative_mouse_event_data([], -43, 2, 0, 0)
+    assert data == b"\x02\x00\x00\xd5\x2f\x00\x00\x00"
+
+def test_mouse_move_x_minus34_y_1():
+    data = get_relative_mouse_event_data([], -34, 1, 0, 0)
+    assert data == b"\x02\x00\x00\xde\x1f\x00\x00\x00"
 
 def test_mouse_move_x_minus18_y_1():
     data = get_relative_mouse_event_data([], -18, 1, 0, 0)
@@ -118,9 +198,21 @@ def test_mouse_move_x_minus3_y_68():
     data = get_relative_mouse_event_data([], -3, 68, 0, 0)
     assert data == b"\x02\x00\x00\xfd\x4f\x04\x00\x00"
 
+def test_mouse_move_x_minus3_y_1():
+    data = get_relative_mouse_event_data([], -3, 1, 0, 0)
+    assert data == b"\x02\x00\x00\xfd\x1f\x00\x00\x00"
+
 def test_mouse_move_x_minus2_y_57():
     data = get_relative_mouse_event_data([], -2, 57, 0, 0)
     assert data == b"\x02\x00\x00\xfe\x9f\x03\x00\x00"
+
+def test_mouse_move_x_minus1_y_minus31():
+    data = get_relative_mouse_event_data([], -1, -31, 0, 0)
+    assert data == b"\x02\x00\x00\xff\x1f\xfe\x00\x00"
+
+def test_mouse_move_x_minus1_y_minus14():
+    data = get_relative_mouse_event_data([], -1, -14, 0, 0)
+    assert data == b"\x02\x00\x00\xff\x2f\xfe\x00\x00"
 
 def test_mouse_move_x_minus1_y_67():
     data = get_relative_mouse_event_data([], -1, 67, 0, 0)
@@ -138,6 +230,14 @@ def test_mouse_move_x_2_y_1():
     data = get_relative_mouse_event_data([], 2, 1, 0, 0)
     assert data == b"\x02\x00\x00\x02\x10\x00\x00\x00"
 
+def test_mouse_move_x_2_y_minus38():
+    data = get_relative_mouse_event_data([], 2, -38, 0, 0)
+    assert data == b"\x02\x00\x00\x02\xa0\xfd\x00\x00"
+
+def test_mouse_move_x_2_y_minus39():
+    data = get_relative_mouse_event_data([], 2, -39, 0, 0)
+    assert data == b"\x02\x00\x00\x02\x90\xfd\x00\x00"
+
 def test_mouse_move_x_2_y_45():
     data = get_relative_mouse_event_data([], 2, 45, 0, 0)
     assert data == b"\x02\x00\x00\x02\xd0\x02\x00\x00"
@@ -149,6 +249,10 @@ def test_mouse_move_x_3_y_18():
 def test_mouse_move_x_5_y_minus23():
     data = get_relative_mouse_event_data([], 5, -23, 0, 0)
     assert data == b"\x02\x00\x00\x05\x90\xfe\x00\x00"
+
+def test_mouse_move_x_5_y_minus34():
+    data = get_relative_mouse_event_data([], 5, -34, 0, 0)
+    assert data == b"\x02\x00\x00\x05\xe0\xfd\x00\x00"
 
 def test_mouse_move_x_8_y_1():
     data = get_relative_mouse_event_data([], 8, 1, 0, 0)
