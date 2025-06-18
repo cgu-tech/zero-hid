@@ -489,7 +489,7 @@ def test_mouse_move_x_127_y_minus19():
             relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
             dev.seek(0)
             data = dev.read()
-    assert data == b"\x02\x00\x00\x7d\xd0\xfe\x00\x00"
+    assert data == b"\x02\x00\x00\x7f\xd0\xfe\x00\x00"
 
 def test_mouse_move_x_127_y_minus21():
     with temp_path() as dev_path:
@@ -502,7 +502,7 @@ def test_mouse_move_x_127_y_minus21():
             relative_mouse_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
             dev.seek(0)
             data = dev.read()
-    assert data == b"\x02\x00\x00\x7b\xb0\xfe\x00\x00"
+    assert data == b"\x02\x00\x00\x7f\xb0\xfe\x00\x00"
 
 # Tests vertical wheel
 
