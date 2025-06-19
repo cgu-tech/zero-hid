@@ -1,5 +1,5 @@
 from zero_hid import Keyboard
-from zero_hid.hid.mouse import send_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
+from zero_hid.hid.keyboard import send_keyboard_event
 from common import read_bytes, temp_path
 
 def send_keyboard_event_data(mods: List[int], keys: List[int]):

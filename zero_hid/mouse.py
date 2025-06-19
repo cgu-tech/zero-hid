@@ -1,5 +1,5 @@
 from . import defaults
-from .hid.mouse import raise_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
+from .hid.mouse import send_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
 from typing import SupportsInt, List
 
 
@@ -32,7 +32,7 @@ class Mouse:
         self.buttons_click([MOUSE_BUTTON_MIDDLE], release)
 
     def buttons_click(self, buttons: List[int], release=True):
-        raise_mouse_event(self.dev, buttons, 0, 0, 0, 0)
+        send_mouse_event(self.dev, buttons, 0, 0, 0, 0)
         self.buttons_state = buttons
         if release:
             self.release()
@@ -53,7 +53,7 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of y {position} out of range (-127 - 127)"
             )
-        raise_mouse_event(self.dev, self.buttons_state, 0, 0, 0, position)
+        send_mouse_event(self.dev, self.buttons_state, 0, 0, 0, position)
 
     def scroll_x(self, position: int):
         """
@@ -64,13 +64,13 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of x: {position} out of range (-127 - 127)"
             )
-        raise_mouse_event(self.dev, self.buttons_state, 0, 0, position, 0)
+        send_mouse_event(self.dev, self.buttons_state, 0, 0, position, 0)
 
     def raw(self, buttons_state, x, y, scroll_x, scroll_y):
         """
         Control the way you like
         """
-        raise_mouse_event(self.dev, buttons_state, x, y, scroll_x, scroll_y)
+        send_mouse_event(self.dev, buttons_state, x, y, scroll_x, scroll_y)
 
     def move(self, x, y):
         """
@@ -81,7 +81,7 @@ class Mouse:
             raise RelativeMoveRangeError(f"Value of x: {x} out of range (-2047 - 2047)")
         if not -2047 <= y <= 2047:
             raise RelativeMoveRangeError(f"Value of y: {y} out of range (-2047 - 2047)")
-        raise_mouse_event(self.dev, self.buttons_state, x, y, 0, 0)
+        send_mouse_event(self.dev, self.buttons_state, x, y, 0, 0)
 
     def __enter__(self):
         return self
