@@ -9,7 +9,7 @@ from common import read_bytes, temp_path
 # source ~/venv/bin/activate && cd zero-hid
 # sudo chmod 755 run_tests.sh && ./run_tests.sh tests/keyboard_test.py
 
-def send_keyboard_event_data(mods: List[int], keys: List[int]):
+def send_keyboard_event_data(mods, keys):
     with temp_path() as dev_path:
         with open(dev_path, "w+b") as dev:
             send_keyboard_event(dev, mods, keys)
