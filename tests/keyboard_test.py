@@ -26,47 +26,59 @@ def test_identity_report():
 
 # Tests keyboard modifiers unique
 
-def test_keyboard_modifier_left_control():
+def test_keyboard_modifier_leftcontrol():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL], None)
     assert data == b"\x01\x01\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_left_shift():
+def test_keyboard_modifier_leftshift():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_SHIFT], None)
     assert data == b"\x01\x02\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_left_alt():
+def test_keyboard_modifier_leftalt():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_ALT], None)
     assert data == b"\x01\x04\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_left_gui():
+def test_keyboard_modifier_leftgui():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_GUI], None)
     assert data == b"\x01\x08\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_right_control():
+def test_keyboard_modifier_rightcontrol():
     data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_CONTROL], None)
     assert data == b"\x01\x10\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_right_shift():
+def test_keyboard_modifier_rightshift():
     data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_SHIFT], None)
     assert data == b"\x01\x20\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_right_alt():
+def test_keyboard_modifier_rightalt():
     data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_ALT], None)
     assert data == b"\x01\x40\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_right_gui():
+def test_keyboard_modifier_rightgui():
     data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_GUI], None)
     assert data == b"\x01\x80\x00\x00\x00\x00\x00\x00"
 
 # Tests keyboard modifiers multiple
 
-def test_keyboard_modifier_left_control_left_shift():
+def test_keyboard_modifier_leftcontrol_leftshift():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT], None)
     assert data == b"\x01\x03\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_left_control_left_shift_left_gui():
+def test_keyboard_modifier_leftcontrol_leftshift_leftgui():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT, KeyCodes.MOD_LEFT_GUI], None)
     assert data == b"\x01\x0b\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_leftcontrol_leftshift_leftalt_leftgui():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI], None)
+    assert data == b"\x01\x0f\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_leftcontrol_leftshift_leftalt_leftgui_rightalt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x4f\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_leftcontrol_leftshift_leftalt_leftgui_rightcontrol_rightalt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_CONTROL, KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x5f\x00\x00\x00\x00\x00\x00"
 
 #def test_typing():
 #    with temp_path() as p:
