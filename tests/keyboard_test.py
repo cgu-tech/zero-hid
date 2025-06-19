@@ -24,7 +24,7 @@ def test_identity_report():
     data = send_keyboard_event_data(None, None)
     assert data == b"\x01\x00\x00\x00\x00\x00\x00\x00"
 
-# Tests keyboard modifiers
+# Tests keyboard modifiers unique
 
 def test_keyboard_modifier_left_control():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL], None)
@@ -57,6 +57,16 @@ def test_keyboard_modifier_right_alt():
 def test_keyboard_modifier_right_gui():
     data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_GUI], None)
     assert data == b"\x01\x80\x00\x00\x00\x00\x00\x00"
+
+# Tests keyboard modifiers multiple
+
+def test_keyboard_modifier_left_control_left_shift():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT], None)
+    assert data == b"\x01\x03\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_left_control_left_shift_left_gui():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT, KeyCodes.MOD_LEFT_GUI], None)
+    assert data == b"\x01\x0b\x00\x00\x00\x00\x00\x00"
 
 #def test_typing():
 #    with temp_path() as p:
