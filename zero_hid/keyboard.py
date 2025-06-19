@@ -76,36 +76,30 @@ class Keyboard:
                 mods = [KeyCodes[i] for i in mods]
                 keys = [KeyCodes[i] for i in keys]
 
-                # Reduce modifiers to one byte
-                if len(mods) == 1:
-                    mods = mods[0]
-                else:
-                    mods = reduce(operator.or_, mods, 0)
-
                 # Send (1st)..(N-1th) keys + all modifiers
                 keys = deque(keys)
+                keys_to_send = []
                 while len(keys) > 1:
-                    key = keys.popleft()
-                    send_keystroke(self.dev, mods, key, release=False)
-                    print(f"send_keystroke->mods:{mods},key:{key},release=False")
+                    keys_to_send.append(keys.popleft())
+                    send_keyboard_event(self.dev, mods, keys_to_send)
+                    print(f"send_keystroke->mods:{mods},keys:{keys_to_send}")
 
                 # Send (Nth) key + all modifiers
-                key = keys.popleft() if len(keys) > 0 else 0
-                send_keystroke(self.dev, mods, key, release=True)
-                print(f"send_keystroke->mods:{mods},key:{key},release=True")
+                keys_to_send.append(keys.popleft() if len(keys) > 0 else 0)
+                send_keyboard_event(self.dev, mods, keys_to_send)
+                print(f"send_keystroke->mods:{mods},keys:{keys_to_send}")
+                self.release()
 
             if delay > 0:
                 sleep(delay)
 
-    def press(self, mods: List[int], key_code: int = 0, release=True):
-        if len(mods) == 1:
-            mods = mods[0]
-        else:
-            mods = reduce(operator.or_, mods, 0)
-        send_keystroke(self.dev, mods, key_code, release=release)
+    def press(self, modifiers: List[int], keys: List[int]: int = 0, release=True):
+        send_keyboard_event(self.dev, modifiers, keys, release=release)
+        if release:
+            self.release()
 
     def release(self):
-        release_keys(self.dev)
+        send_keyboard_event_identity(self.dev)
 
     def __enter__(self):
         return self

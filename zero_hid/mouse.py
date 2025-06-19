@@ -41,7 +41,7 @@ class Mouse:
         """
         Release Mouse Buttons
         """
-        raise_mouse_event(self.dev, MOUSE_BUTTONS_NONE, 0, 0, 0, 0)
+        send_mouse_event_identity(self.dev)
         self.buttons_state = MOUSE_BUTTONS_NONE
 
     def scroll_y(self, position: int):
