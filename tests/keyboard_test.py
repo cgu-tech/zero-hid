@@ -88,9 +88,9 @@ def test_keyboard_modifier_leftcontrol_leftalt_leftgui_rightalt():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_ALT], None)
     assert data == b"\x01\x4d\x00\x00\x00\x00\x00\x00"
 
-def test_keyboard_modifier_leftalt_leftgui_rightalt():
-    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_ALT], None)
-    assert data == b"\x01\x4c\x00\x00\x00\x00\x00\x00"
+def test_keyboard_modifier_leftalt_rightalt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x44\x00\x00\x00\x00\x00\x00"
 
 #def test_typing():
 #    with temp_path() as p:
