@@ -67,7 +67,7 @@ class Keyboard:
             # A single char may need one or multiple key combos
             for combo in kb_map:
 
-                # Retrieve combo modifiers and keys names
+                # Retrieve combo mods and keys names
                 mods = combo["Modifiers"]
                 keys = combo["Keys"]
                 print(f"combo->mods:{mods},keys:{keys}")
@@ -90,8 +90,8 @@ class Keyboard:
             if delay > 0:
                 sleep(delay)
 
-    def press(self, modifiers: List[int], keys: List[int]: int = 0, release=True):
-        send_keyboard_event(self.dev, modifiers, keys, release=release)
+    def press(self, mods: List[int], keys: List[int], release=True):
+        send_keyboard_event(self.dev, mods, keys)
         if release:
             self.release()
 
