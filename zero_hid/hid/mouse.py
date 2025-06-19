@@ -25,12 +25,12 @@ def reduce_values(values: List[int]):
         values = reduce(operator.or_, values, 0)
     return values
 
-def send_mouse_event(dev, buttons: List[int], x, y, scroll_y, scroll_x):
+def send_mouse_event(dev, buttons: List[int], x, y, scroll_x, scroll_y):
     # Create Mouse report buffer
     buf = [0] * 8
 
     # Report ID 2: 8 bits (1 byte)
-    buf[0] = MOUSE_REPORT_ID                 
+    buf[0] = MOUSE_REPORT_ID
 
     # Buttons: 16 bits (2 bytes)
     buttons = reduce_values(buttons)

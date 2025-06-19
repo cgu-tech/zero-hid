@@ -53,7 +53,7 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of y {position} out of range (-127 - 127)"
             )
-        raise_mouse_event(self.dev, self.buttons_state, 0, 0, position, 0)
+        raise_mouse_event(self.dev, self.buttons_state, 0, 0, 0, position)
 
     def scroll_x(self, position: int):
         """
@@ -64,13 +64,13 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of x: {position} out of range (-127 - 127)"
             )
-        raise_mouse_event(self.dev, self.buttons_state, 0, 0, 0, position)
+        raise_mouse_event(self.dev, self.buttons_state, 0, 0, position, 0)
 
-    def raw(self, buttons_state, x, y, scroll_y, scroll_x):
+    def raw(self, buttons_state, x, y, scroll_x, scroll_y):
         """
         Control the way you like
         """
-        raise_mouse_event(self.dev, buttons_state, x, y, scroll_y, scroll_x)
+        raise_mouse_event(self.dev, buttons_state, x, y, scroll_x, scroll_y)
 
     def move(self, x, y):
         """

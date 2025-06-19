@@ -1,6 +1,20 @@
 from zero_hid import Keyboard
-from common import temp_path, read_bytes
+from zero_hid.hid.mouse import send_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
+from common import read_bytes, temp_path
 
+def send_keyboard_event_data(dev, mods: List[int], keys: List[int]):
+    with temp_path() as dev_path:
+        with open(dev_path, "w+b") as dev:
+            send_keyboard_event(dev, buttons, x, y, vertical_wheel_delta, horizontal_wheel_delta)
+            dev.seek(0)
+            data = dev.read()
+    return data
+
+# Test keyboard identity
+
+def test_identity_report():
+    data = send_keyboard_event_data([], 0, 0, 0, 0)
+    assert data == b"\x02\x00\x00\x00\x00\x00\x00\x00"
 
 def test_typing():
     with temp_path() as p:
