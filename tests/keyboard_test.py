@@ -1,5 +1,6 @@
 from zero_hid import Keyboard
 from zero_hid.hid.keyboard import send_keyboard_event
+from zero_hid.hid.keycodes import KeyCodes
 from common import read_bytes, temp_path
 
 # To install tests dependencies:
@@ -22,6 +23,40 @@ def send_keyboard_event_data(mods, keys):
 def test_identity_report():
     data = send_keyboard_event_data(None, None)
     assert data == b"\x01\x00\x00\x00\x00\x00\x00\x00"
+
+# Tests keyboard modifiers
+
+def test_keyboard_modifier_left_control():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL], None)
+    assert data == b"\x01\x01\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_left_shift():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_SHIFT], None)
+    assert data == b"\x01\x02\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_left_alt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_ALT], None)
+    assert data == b"\x01\x04\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_left_gui():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_GUI], None)
+    assert data == b"\x01\x08\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_right_control():
+    data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_CONTROL], None)
+    assert data == b"\x01\x10\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_right_shift():
+    data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_SHIFT], None)
+    assert data == b"\x01\x20\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_right_alt():
+    data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x40\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_right_gui():
+    data = send_keyboard_event_data([KeyCodes.MOD_RIGHT_GUI], None)
+    assert data == b"\x01\x80\x00\x00\x00\x00\x00\x00"
 
 #def test_typing():
 #    with temp_path() as p:
