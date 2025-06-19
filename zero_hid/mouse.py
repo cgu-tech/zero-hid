@@ -1,5 +1,5 @@
 from . import defaults
-from .hid.mouse import send_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
+from .hid.mouse import send_mouse_event, send_mouse_event_identity, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
 from typing import SupportsInt, List
 
 
