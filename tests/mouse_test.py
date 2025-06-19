@@ -2,6 +2,13 @@ from zero_hid import Mouse
 from zero_hid.hid.mouse import send_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
 from common import read_bytes, temp_path
 
+# To install tests dependencies:
+# source ~/venv/bin/activate && pip install pytest
+
+# To run:
+# source ~/venv/bin/activate && cd zero-hid
+# sudo chmod 755 run_tests.sh && ./run_tests.sh tests/mouse_test.py
+
 def send_mouse_event_data(buttons, x, y, scroll_x, scroll_y):
     with temp_path() as dev_path:
         with open(dev_path, "w+b") as dev:
