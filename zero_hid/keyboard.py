@@ -79,16 +79,13 @@ class Keyboard:
                 # Send (1st)..(N-1th) keys + all modifiers
                 keys = deque(keys)
                 keys_to_send = []
-                while len(keys) > 1:
+                while len(keys) > 0:
                     keys_to_send.append(keys.popleft())
                     send_keyboard_event(self.dev, mods, keys_to_send)
-                    print(f"send_keystroke->mods:{mods},keys:{keys_to_send}")
+                    print(f"send_keyboard_event->mods:{mods},keys:{keys_to_send}")
 
-                # Send (Nth) key + all modifiers
-                keys_to_send.append(keys.popleft() if len(keys) > 0 else 0)
-                send_keyboard_event(self.dev, mods, keys_to_send)
-                print(f"send_keystroke->mods:{mods},keys:{keys_to_send}")
                 self.release()
+                print(f"released->mods:{mods},keys:{keys_to_send}")              
 
             if delay > 0:
                 sleep(delay)
