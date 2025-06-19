@@ -80,6 +80,18 @@ def test_keyboard_modifier_leftcontrol_leftshift_leftalt_leftgui_rightcontrol_ri
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_SHIFT, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_CONTROL, KeyCodes.MOD_RIGHT_ALT], None)
     assert data == b"\x01\x5f\x00\x00\x00\x00\x00\x00"
 
+def test_keyboard_modifier_leftcontrol_leftalt_leftgui_rightcontrol_rightalt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_CONTROL, KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x5d\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_leftcontrol_leftalt_leftgui_rightalt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_CONTROL, KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x4d\x00\x00\x00\x00\x00\x00"
+
+def test_keyboard_modifier_leftalt_leftgui_rightalt():
+    data = send_keyboard_event_data([KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_LEFT_GUI, KeyCodes.MOD_RIGHT_ALT], None)
+    assert data == b"\x01\x4c\x00\x00\x00\x00\x00\x00"
+
 #def test_typing():
 #    with temp_path() as p:
 #        k = Keyboard(p)
