@@ -20,7 +20,7 @@ def pack_keys(keys: List[int]) -> List[int]:
     if not keys:
         return []
     if len(keys) > 6:
-        raise ValueError("Too many keys: HID supports up to 6 simultaneous key presses.")
+        raise ValueError("Too many keyboard keys: HID supports up to 6 simultaneous key presses.")
     return keys
 
 def reduce_values(values: List[int]):
@@ -43,7 +43,7 @@ def send_keyboard_event(dev, mods: List[int], keys: List[int]):
     mods = reduce_values(mods)
     buf[1] = mods
 
-    # 6 keys: 48 bits (8 bytes)
+    # 6 keys: 48 bits (6 bytes)
     keys = pack_keys(keys)
     i = 2
     for key in keys:
@@ -56,12 +56,6 @@ def send_keyboard_event(dev, mods: List[int], keys: List[int]):
 def send_keyboard_event_identity(dev):
     send_keyboard_event(dev, None, None)
 
-# Bit 0: Num Lock
-# Bit 1: Caps Lock
-# Bit 2: Scroll Lock
-# Bit 3: Compose
-# Bit 4: Kana
-# Bits 5-7: Padding (unused)
 def read_keyboard_state(dev, timeout=0.1) -> int | None:
     """
     Reads the LED output report (Report ID 0x0E) from the HID device in non-blocking mode.
@@ -87,6 +81,12 @@ def read_keyboard_state(dev, timeout=0.1) -> int | None:
         # Attempt to read 2 bytes (Report ID + LED bits)
         data = dev.read(2)
         if data and len(data) == 2 and data[0] == 0x0E:
+            # Bit 0: Num Lock
+            # Bit 1: Caps Lock
+            # Bit 2: Scroll Lock
+            # Bit 3: Compose
+            # Bit 4: Kana
+            # Bits 5-7: Padding (unused)
             return data[1] & 0b00011111
     except BlockingIOError:
         pass

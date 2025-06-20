@@ -1,24 +1,33 @@
-# zero_hid/hid/consumer.py
-
 from . import write as hid_write
+from typing import List
 
-CONSUMER_REPORT_ID = 0x02  # Report ID for Consumer Control
+CONSUMER_REPORT_ID = 0x03  # Report ID for Consumer Control
 
-def send_keystroke(consumer_path, hid_keycode, release=True) -> None:
-    buf = [0] * 3
-    buf[0] = CONSUMER_REPORT_ID        # Report ID
-    #buf[1] = (hid_keycode >> 8) & 0xFF # LSB
-    #buf[2] = hid_keycode & 0xFF        # MSB
-    buf[1] = hid_keycode & 0xFF        # LSB
-    buf[2] = (hid_keycode >> 8) & 0xFF # MSB
-    hid_write.write_to_hid_interface(consumer_path, buf)
+def pack_keys(keys: List[int]) -> List[int]:
+    """Pack a signed integer value into 12 bits 2's complement."""
+    if not keys:
+        return []
+    if len(keys) > 2:
+        raise ValueError("Too many consumer keys: HID supports up to 2 simultaneous key presses.")
+    return keys
 
-    # If it's a normal keycode (i.e. not a standalone modifier key), add a
-    # message indicating that the key should be released after it is sent.
-    if release:
-        release_keys(consumer_path)
+def send_consumer_event(dev, keys: List[int]) -> None:
+    # Create Consumer report buffer
+    buf = [0] * 5
 
-def release_keys(consumer_path):
-    buf = [0] * 3
+    # Report ID 3: 8 bits (1 byte)
     buf[0] = CONSUMER_REPORT_ID
-    hid_write.write_to_hid_interface(consumer_path, buf)
+
+    # 2 keys (16 bits per key, little endian): 32 bits (4 bytes)
+    keys = pack_keys(keys)
+    i = 2
+    for key in keys:
+        buf[i] = key & 0xFF         # low byte
+        i += 1
+        buf[i] = (key >> 8) & 0xFF  # high byte
+        i += 1
+
+    hid_write.write_to_hid_interface(dev, buf)
+
+def send_consumer_event_identity(dev):
+    send_consumer_event(dev, None)
