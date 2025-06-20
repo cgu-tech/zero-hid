@@ -92,6 +92,33 @@ def test_keyboard_modifier_leftalt_rightalt():
     data = send_keyboard_event_data([KeyCodes.MOD_LEFT_ALT, KeyCodes.MOD_RIGHT_ALT], None)
     assert data == b"\x01\x44\x00\x00\x00\x00\x00\x00"
 
+# Tests keyboard keys single
+
+def test_keyboard_key_q():
+    data = send_keyboard_event_data(None, [KeyCodes.KEY_Q])
+    assert data == b"\x01\x00\x14\x00\x00\x00\x00\x00"
+
+def test_keyboard_key_w():
+    data = send_keyboard_event_data(None, [KeyCodes.KEY_W])
+    assert data == b"\x01\x00\x1A\x00\x00\x00\x00\x00"
+
+def test_keyboard_key_e():
+    data = send_keyboard_event_data(None, [KeyCodes.KEY_E])
+    assert data == b"\x01\x00\x08\x00\x00\x00\x00\x00"
+
+def test_keyboard_key_r():
+    data = send_keyboard_event_data(None, [KeyCodes.KEY_R])
+    assert data == b"\x01\x00\x15\x00\x00\x00\x00\x00"
+
+def test_keyboard_key_t():
+    data = send_keyboard_event_data(None, [KeyCodes.KEY_T])
+    assert data == b"\x01\x00\x17\x00\x00\x00\x00\x00"
+
+def test_keyboard_key_y():
+    data = send_keyboard_event_data(None, [KeyCodes.KEY_Y])
+    assert data == b"\x01\x00\x1C\x00\x00\x00\x00\x00"
+
+
 #def test_typing():
 #    with temp_path() as p:
 #        k = Keyboard(p)
