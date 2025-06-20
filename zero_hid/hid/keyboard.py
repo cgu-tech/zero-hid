@@ -56,15 +56,6 @@ def send_keyboard_event_identity(dev):
 # Bits 5-7: Padding (unused)
 def read_keyboard_state(dev, timeout=0.1) -> int | None:
     """
-    Non-blocking read of the LED state from Report ID 14 on the HID gadget.
-
-    :param dev: file-like object opened in "r+b" mode on HID device
-    :param timeout: seconds to wait for data before returning None
-    :return: int with LED bits (0-31), or None if no data available
-    """
-    
-def read_leds(dev) -> int | None:
-    """
     Reads the LED output report (Report ID 0x0E) from the HID device in non-blocking mode.
 
     Parameters:
