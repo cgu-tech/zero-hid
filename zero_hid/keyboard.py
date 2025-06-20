@@ -17,13 +17,14 @@ class LEDState(TypedDict):
     num_lock: bool
     caps_lock: bool
     scroll_lock: bool
-
+    compose: bool
+    kana: bool
 
 class Keyboard:
 
     def __init__(self, dev=defaults.KEYBOARD_PATH) -> None:
         if not hasattr(dev, "write"):  # check if file like object
-            self.dev = open(dev, "ab+")
+            self.dev = open(dev, "r+b")
         else:
             self.dev = dev
         self.set_layout()
@@ -38,20 +39,34 @@ class Keyboard:
                 name, desc = content["Name"], content["Description"]
             print(f"{count}. {name}: {desc}")
 
-    def blocking_read_led_status(self) -> LEDState:
+    def parse_leds(leds: int) -> LEDState:
+        """
+        Parse the 5-bit LED state integer into a dictionary of boolean LED states.
+        
+        :param leds: int with bits for LEDs (0b000xxxxx)
+        :return: LEDState dict
+        """
+        return LEDState(
+            num_lock=bool(leds & 0b00001),     # bit 0
+            caps_lock=bool(leds & 0b00010),    # bit 1
+            scroll_lock=bool(leds & 0b00100),  # bit 2
+            compose=bool(leds & 0b01000),      # bit 3
+            kana=bool(leds & 0b10000),         # bit 4
+        )
+
+    def read_state(self) -> LEDState:
         """
         **The function will block until the LED state has been read from the device.**
         """
-        self.dev
-        report = read_last_report(self.dev, 1)  # Read 1 byte from the HID device
-        led_indicators = report[0]  # Convert the byte to an integer
+        state = read_keyboard_state(self.dev)
 
-        # Interpret the LED indicators
-        return {
-            "num_lock": (led_indicators & 0x01) != 0,
-            "caps_lock": (led_indicators & 0x02) != 0,
-            "scroll_lock": (led_indicators & 0x04) != 0,
-        }
+        # Return identity when state cannot be read
+        if state is None:
+            print("No LED data available (non-blocking).")
+            state = 0b00000
+
+        leds = self.parse_leds(state)
+        return leds
 
     def set_layout(self, language="US"):
         self.layout = json.loads(

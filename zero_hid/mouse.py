@@ -18,7 +18,7 @@ class Mouse:
         if dev is None:
             dev = defaults.MOUSE_PATH
         if not hasattr(dev, "write"):  # check if file like object
-            self.dev = open(dev, "ab+")
+            self.dev = open(dev, "r+b")
         else:
             self.dev = dev
 
