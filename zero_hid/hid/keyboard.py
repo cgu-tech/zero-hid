@@ -1,8 +1,8 @@
-from io import BufferedReader
 from . import write as hid_write
 from functools import reduce
 import operator
 from typing import List
+import os
 import select
 
 KEYBOARD_REPORT_ID = 0x01  # Report ID for Keyboard
@@ -54,7 +54,7 @@ def send_keyboard_event_identity(dev):
 # Bit 3: Compose
 # Bit 4: Kana
 # Bits 5-7: Padding (unused)
-def read_keyboard_state(dev, timeout=0.1):
+def read_keyboard_state(dev, timeout=0.1) -> int | None:
     """
     Non-blocking read of the LED state from Report ID 14 on the HID gadget.
 
@@ -62,21 +62,36 @@ def read_keyboard_state(dev, timeout=0.1):
     :param timeout: seconds to wait for data before returning None
     :return: int with LED bits (0-31), or None if no data available
     """
-    # Check if device is ready for reading
-    rlist, _, _ = select.select([dev], [], [], timeout)
-    if not rlist:
-        # No data available within timeout
-        return None
+    
+def read_leds(dev) -> int | None:
+    """
+    Reads the LED output report (Report ID 0x0E) from the HID device in non-blocking mode.
 
-    # Data is available, attempt to read
+    Parameters:
+        dev (file-like object): An open HID device in 'r+b' mode.
+
+    Returns:
+        int | None: A byte representing the LED bitfield if available, or None if no data.
+    """
+    # Set the file descriptor to non-blocking
+    fd = dev.fileno()
+    fl = os.O_NONBLOCK
+    orig_fl = os.get_blocking(fd)
+    os.set_blocking(fd, False)
+
     try:
-        dev.seek(0)
+        # Wait up to 100ms for data to be ready
+        rlist, _, _ = select.select([dev], [], [], timeout)
+        if not rlist:
+            return None
+
+        # Attempt to read 2 bytes (Report ID + LED bits)
         data = dev.read(2)
-        if len(data) != 2 or data[0] != 0x0E:
-            return None  # Invalid report
+        if data and len(data) == 2 and data[0] == 0x0E:
+            return data[1] & 0b00011111
+    except BlockingIOError:
+        pass
+    finally:
+        os.set_blocking(fd, orig_fl)
 
-        state = data[1] & 0b00011111
-        return state
-
-    except Exception:
-        return None
+    return None
