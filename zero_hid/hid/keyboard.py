@@ -1,7 +1,7 @@
 from . import write as hid_write
 from functools import reduce
 import operator
-from typing import List
+from typing import List, TypedDict
 import os
 import select
 

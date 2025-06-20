@@ -10,7 +10,6 @@ from functools import reduce
 import pkgutil
 import os
 import pathlib
-from typing import TypedDict
 from collections import deque
 
 class Keyboard:
