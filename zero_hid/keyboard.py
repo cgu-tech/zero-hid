@@ -1,6 +1,6 @@
 from typing import List
 
-from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_last_report
+from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state
 from .hid.keycodes import KeyCodes
 from . import defaults
 from time import sleep
