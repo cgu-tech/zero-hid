@@ -1,6 +1,6 @@
 from typing import List
 
-from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state
+from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state, LEDState, parse_leds, KEYBOARD_STATE_NONE
 from .hid.keycodes import KeyCodes
 from . import defaults
 from time import sleep
@@ -12,13 +12,6 @@ import os
 import pathlib
 from typing import TypedDict
 from collections import deque
-
-class LEDState(TypedDict):
-    num_lock: bool
-    caps_lock: bool
-    scroll_lock: bool
-    compose: bool
-    kana: bool
 
 class Keyboard:
 
@@ -39,21 +32,6 @@ class Keyboard:
                 name, desc = content["Name"], content["Description"]
             print(f"{count}. {name}: {desc}")
 
-    def parse_leds(leds: int) -> LEDState:
-        """
-        Parse the 5-bit LED state integer into a dictionary of boolean LED states.
-        
-        :param leds: int with bits for LEDs (0b000xxxxx)
-        :return: LEDState dict
-        """
-        return LEDState(
-            num_lock=bool(leds & 0b00001),     # bit 0
-            caps_lock=bool(leds & 0b00010),    # bit 1
-            scroll_lock=bool(leds & 0b00100),  # bit 2
-            compose=bool(leds & 0b01000),      # bit 3
-            kana=bool(leds & 0b10000),         # bit 4
-        )
-
     def read_state(self) -> LEDState:
         """
         **The function will block until the LED state has been read from the device.**
@@ -63,7 +41,7 @@ class Keyboard:
         # Return identity when state cannot be read
         if state is None:
             print("No LED data available (non-blocking).")
-            state = 0b00000
+            state = KEYBOARD_STATE_NONE
 
         leds = self.parse_leds(state)
         return leds

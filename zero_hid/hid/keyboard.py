@@ -5,7 +5,15 @@ from typing import List
 import os
 import select
 
+KEYBOARD_STATE_NONE = 0b00000
 KEYBOARD_REPORT_ID = 0x01  # Report ID for Keyboard
+
+class LEDState(TypedDict):
+    num_lock: bool
+    caps_lock: bool
+    scroll_lock: bool
+    compose: bool
+    kana: bool
 
 def pack_keys(keys: List[int]) -> List[int]:
     """Pack a signed integer value into 12 bits 2's complement."""
@@ -86,3 +94,18 @@ def read_keyboard_state(dev, timeout=0.1) -> int | None:
         os.set_blocking(fd, orig_fl)
 
     return None
+
+def parse_leds(leds: int) -> LEDState:
+    """
+    Parse the 5-bit LED state integer into a dictionary of boolean LED states.
+    
+    :param leds: int with bits for LEDs (0b000xxxxx)
+    :return: LEDState dict
+    """
+    return LEDState(
+        num_lock=bool(leds & 0b00001),     # bit 0
+        caps_lock=bool(leds & 0b00010),    # bit 1
+        scroll_lock=bool(leds & 0b00100),  # bit 2
+        compose=bool(leds & 0b01000),      # bit 3
+        kana=bool(leds & 0b10000),         # bit 4
+    )
