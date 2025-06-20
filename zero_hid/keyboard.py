@@ -91,7 +91,7 @@ class Keyboard:
                 mods = [KeyCodes[i] for i in mods]
                 keys = [KeyCodes[i] for i in keys]
 
-                # Send (1st)..(N-1th) keys + all modifiers
+                # Send 1st to last keys + all modifiers
                 keys = deque(keys)
                 keys_to_send = []
                 while len(keys) > 0:
@@ -99,6 +99,7 @@ class Keyboard:
                     send_keyboard_event(self.dev, mods, keys_to_send)
                     print(f"send_keyboard_event->mods:{mods},keys:{keys_to_send}")
 
+                # Send release for all keys + modifiers
                 self.release()
                 print(f"released->mods:{mods},keys:{keys_to_send}")              
 
