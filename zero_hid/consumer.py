@@ -1,41 +1,51 @@
-# zero_hid/consumer.py
-
-from .hid.consumer import send_keystroke, release_keys
+from .hid.consumer import send_consumer_event, send_consumer_event_identity
 from . import defaults
 from time import sleep
+from typing import List
+from collections import deque
 
 class Consumer:
-    """
-    High-level API for sending Consumer HID events.
-    """
 
     def __init__(self, dev=defaults.CONSUMER_PATH):
         if not hasattr(dev, "write"):  # check if file-like object
-            self.dev = open(dev, "ab+")
+            self.dev = open(dev, "r+b")
         else:
             self.dev = dev
 
-    def press(self, key_code: int = 0, release=True):
-        send_keystroke(self.dev, key_code, release=release)
+    def tap(self, keys: List[int], delay=0):
+        # Send 1st to last key
+        keys = deque(keys)
+        keys_to_send = []
+        while len(keys) > 0:
+            keys_to_send.append(keys.popleft())
+            send_consumer_event(self.dev, keys_to_send)
+            print(f"send_consumer_event->keys:{keys_to_send}")
+
+        # Send release for all consumer keys
+        self.release()
+
+        # Wait before next consumer key tap
+        if delay > 0:
+            sleep(delay)
+
+    def press(self, keys: List[int], release=True):
+        send_consumer_event(self.dev, keys)
+        if release:
+            self.release()
 
     def release(self):
-        release_keys(self.dev)
+        send_consumer_event_identity(self.dev)
 
-    def tap(self, key_code, delay=0):
-        send_keystroke(self.dev, key_code, release=False)
-        release_keys(self.dev)
-        sleep(delay)
+    def __enter__(self):
+        return self
 
     def _clean_resources(self):
         if self.dev:
             self.dev.close()
             self.dev = None
 
-    def close(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         self._clean_resources()
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def close(self):
         self._clean_resources()

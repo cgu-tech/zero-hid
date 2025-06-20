@@ -1,15 +1,12 @@
-from typing import List
-
 from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state, LEDState, parse_leds, KEYBOARD_STATE_NONE
 from .hid.keycodes import KeyCodes
 from . import defaults
 from time import sleep
 import json
-import operator
-from functools import reduce
 import pkgutil
 import os
 import pathlib
+from typing import List
 from collections import deque
 
 class Keyboard:
@@ -32,9 +29,6 @@ class Keyboard:
             print(f"{count}. {name}: {desc}")
 
     def read_state(self) -> LEDState:
-        """
-        **The function will block until the LED state has been read from the device.**
-        """
         state = read_keyboard_state(self.dev)
 
         # Return identity when state cannot be read
@@ -68,7 +62,7 @@ class Keyboard:
                 mods = [KeyCodes[i] for i in mods]
                 keys = [KeyCodes[i] for i in keys]
 
-                # Send 1st to last keys + all modifiers
+                # Send 1st to last key + all modifiers
                 keys = deque(keys)
                 keys_to_send = []
                 while len(keys) > 0:
@@ -80,6 +74,7 @@ class Keyboard:
                 self.release()
                 print(f"released->mods:{mods},keys:{keys_to_send}")              
 
+            # Wait before next char type
             if delay > 0:
                 sleep(delay)
 
@@ -95,7 +90,9 @@ class Keyboard:
         return self
 
     def _clean_resources(self):
-        self.dev.close()
+        if self.dev:
+            self.dev.close()
+            self.dev = None
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._clean_resources()
