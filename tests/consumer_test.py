@@ -21,8 +21,8 @@ def send_consumer_event_data(mods, keys):
 # Test keyboard identity
 
 def test_identity_report():
-    data = send_consumer_event_data(None, None)
-    assert data == b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    data = send_consumer_event_data(None)
+    assert data == b"\x03\x00\x00\x00\x00"
 
 # Tests keyboard modifiers unique
 
