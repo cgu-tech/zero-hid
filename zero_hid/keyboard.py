@@ -1,32 +1,22 @@
-from typing import List
-
-from .hid.keyboard import send_keystroke, release_keys, read_last_report
+from . import defaults, Device
+from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state, LEDState, parse_leds, KEYBOARD_STATE_NONE
 from .hid.keycodes import KeyCodes
-from . import defaults
+from collections import deque
 from time import sleep
+from typing import List
 import json
-import operator
-from functools import reduce
 import pkgutil
 import os
 import pathlib
-from typing import TypedDict
-
-
-class LEDState(TypedDict):
-    num_lock: bool
-    caps_lock: bool
-    scroll_lock: bool
+import logging
+logger = logging.getLogger(__name__)
 
 
 class Keyboard:
 
-    def __init__(self, dev=defaults.KEYBOARD_PATH) -> None:
-        if not hasattr(dev, "write"):  # check if file like object
-            self.dev = open(dev, "ab+")
-        else:
-            self.dev = dev
-        self.set_layout()
+    def __init__(self, hid: Device, language="US") -> None:
+        self.set_hid(hid)
+        self.set_layout(language)
 
     def list_layout(self):
         keymaps_dir = pathlib.Path(__file__).parent.absolute() / "keymaps"
@@ -36,62 +26,137 @@ class Keyboard:
             with open(keymaps_dir / fname, encoding="UTF-8") as f:
                 content = json.load(f)
                 name, desc = content["Name"], content["Description"]
-            print(f"{count}. {name}: {desc}")
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                logger.debug(f"{count}. {name}: {desc}")
 
-    def blocking_read_led_status(self) -> LEDState:
-        """
-        **The function will block until the LED state has been read from the device.**
-        """
-        self.dev
-        report = read_last_report(self.dev, 1)  # Read 1 byte from the HID device
-        led_indicators = report[0]  # Convert the byte to an integer
+    def read_state(self) -> LEDState:
+        state = read_keyboard_state(self.hid_file())
 
-        # Interpret the LED indicators
-        return {
-            "num_lock": (led_indicators & 0x01) != 0,
-            "caps_lock": (led_indicators & 0x02) != 0,
-            "scroll_lock": (led_indicators & 0x04) != 0,
-        }
+        # Return identity when state cannot be read
+        if state is None:
+            logger.warning("No LED data available")
+            state = KEYBOARD_STATE_NONE
 
-    def set_layout(self, language="US"):
+        leds = self.parse_leds(state)
+        return leds
+
+    def set_layout(self, language):
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"language:{language}")
+        self.language = language
         self.layout = json.loads(
             pkgutil.get_data(__name__, f"keymaps/{language}.json").decode()
         )
 
     def type(self, text, delay=0):
-        for c in text:
-            key_map = self.layout["Mapping"][c]
-            key_map = key_map[0]
-            mods = key_map["Modifiers"]
-            keys = key_map["Keys"]
-            mods = [KeyCodes[i] for i in mods]
-            keys = [KeyCodes[i] for i in keys]
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"text:{text},delay:{delay}")
+        if text:
+            for c in text:
+                if logger.getEffectiveLevel() == logging.DEBUG:
+                    logger.debug(f"c:{c}")
+                kb_map = self.layout["Mapping"][c]
+                if kb_map is None:
+                    raise ValueError(f"No mapping found for character: {c}")
+            
+                # A single char may need one or multiple key combos
+                for combo in kb_map:
+            
+                    # Retrieve combo mods and keys names
+                    mods = combo["Modifiers"]
+                    keys = combo["Keys"]
+                    if logger.getEffectiveLevel() == logging.DEBUG:
+                        logger.debug(f"c:{c} combo->mods:{mods},keys:{keys}")
+            
+                    # Retrieve combo modifiers and keys codes
+                    mods = [KeyCodes[i] for i in mods]
+                    keys = [KeyCodes[i] for i in keys]
+            
+                    mods = deque(mods)
+                    keys = deque(keys)
+            
+                    mods_to_send = []
+                    keys_to_send = []
+            
+                    logger.debug("Send 1st to last modifier aggregated sequentially")
+                    while len(mods) > 0:
+                        mods_to_send.append(mods.popleft())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                    logger.debug("Send all modifiers + 1st to last key aggregated sequentially")
+                    while len(keys) > 0:
+                        keys_to_send.append(keys.popleft())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                    logger.debug("Send all modifiers + last to 1st key de-aggregated sequentially")
+                    while len(keys_to_send) > 0:
+                        keys.append(keys_to_send.pop())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                    logger.debug("Send last to 1st modifier de-aggregated sequentially")
+                    while len(mods_to_send) > 0:
+                        mods.append(mods_to_send.pop())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                if delay > 0:
+                    if logger.getEffectiveLevel() == logging.DEBUG:
+                        logger.debug(f"Wait {delay}s before next char type")
+                    sleep(delay)
 
-            if len(mods) == 1:
-                mods = mods[0]
-            else:
-                mods = reduce(operator.or_, mods, 0)
-            send_keystroke(self.dev, mods, keys[0])
-            sleep(delay)
-
-    def press(self, mods: List[int], key_code: int = 0, release=True):
-        if len(mods) == 1:
-            mods = mods[0]
-        else:
-            mods = reduce(operator.or_, mods, 0)
-        send_keystroke(self.dev, mods, key_code, release=release)
+    def press(self, mods: List[int], keys: List[int], release=True):
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"mods:{mods},keys:{keys},release={release}")
+        send_keyboard_event(self.hid_file(), mods, keys)
+        if release:
+            self.release()
 
     def release(self):
-        release_keys(self.dev)
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug("Releasing...")
+        send_keyboard_event_identity(self.hid_file())
 
-    def __enter__(self):
-        return self
+    def combo_switch_app(self):
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Sending combo...")
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], None)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], [KeyCodes.KEY_TAB])
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], None)
+        send_keyboard_event(self.hid_file(), None, None)
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Combo send")
 
-    def _clean_resources(self):
-        self.dev.close()
+    def combo_show_desktop(self):
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Sending combo...")
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_D])
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.hid_file(), None, None)
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Combo send")
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._clean_resources()
+    def combo_maximize_window(self):
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Sending combo...")
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_UP])
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.hid_file(), None, None)
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Combo send")
 
-    def close(self):
-        self._clean_resources()
+    def combo_switch_display(self):
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Sending combo...")
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_P])
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.hid_file(), None, None)
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Combo send")
+
+    def set_hid(self, hid: Device):
+        self.hid = hid
+
+    def hid_file(self):
+        return self.hid.get_file()

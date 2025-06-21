@@ -7,6 +7,14 @@ class KeyCodes:
     def __getitem__(self, key):
         return getattr(self, key)
 
+    @classmethod
+    def as_dict(cls):
+        return {
+            key: value
+            for key, value in vars(cls).items()
+            if key.isupper() and not key.startswith("__")
+        }
+
     MOD_LEFT_CONTROL = 0x01
     MOD_LEFT_SHIFT = 0x02
     MOD_LEFT_ALT = 0x04
