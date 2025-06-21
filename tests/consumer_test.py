@@ -18,17 +18,34 @@ def send_consumer_event_data(keys):
             data = dev.read()
     return data
 
-# Test keyboard identity
+# Test consumer identity
 
 def test_identity_report():
     data = send_consumer_event_data(None)
     assert data == b"\x03\x00\x00\x00\x00"
 
-# Tests keyboard modifiers unique
+# Tests consumer key unique
+
+def test_consumer_ac_back():
+    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
+    assert data == b"\x03\x24\x02\x00\x00"
+
+def test_consumer_ac_home():
+    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
+    assert data == b"\x03\x23\x02\x00\x00"
+
+
+
+
+
+
+
 
 def test_consumer_volume_decrement():
     data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
     assert data == b"\x03\xea\x00\x00\x00"
+
+# Tests consumer key multiple
 
 def test_consumer_volume_decrement_volume_increment():
     data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT, ConsumerCodes.CON_VOLUME_INCREMENT])

@@ -13,16 +13,21 @@ class Consumer:
             self.dev = dev
 
     def tap(self, keys: List[int], delay=0):
-        # Send 1st to last key
         keys = deque(keys)
+
         keys_to_send = []
+
+        # Send 1st to last key aggregated sequentially
         while len(keys) > 0:
             keys_to_send.append(keys.popleft())
             send_consumer_event(self.dev, keys_to_send)
             print(f"send_consumer_event->keys:{keys_to_send}")
 
-        # Send release for all consumer keys
-        self.release()
+        # Send last to 1st key de-aggregated sequentially
+        while len(keys_to_send) > 0:
+            keys.append(keys_to_send.pop())
+            send_consumer_event(self.dev, keys_to_send)
+            print(f"send_consumer_event->keys:{keys_to_send}")
 
         # Wait before next consumer key tap
         if delay > 0:

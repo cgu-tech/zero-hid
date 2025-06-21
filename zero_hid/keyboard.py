@@ -62,17 +62,35 @@ class Keyboard:
                 mods = [KeyCodes[i] for i in mods]
                 keys = [KeyCodes[i] for i in keys]
 
-                # Send 1st to last key + all modifiers
+                mods = deque(mods)
                 keys = deque(keys)
+
+                mods_to_send = []
                 keys_to_send = []
+
+                # Send 1st to last modifier aggregated sequentially
+                while len(mods) > 0:
+                    mods_to_send.append(mods.popleft())
+                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
+
+                # Send all modifiers + 1st to last key aggregated sequentially
                 while len(keys) > 0:
                     keys_to_send.append(keys.popleft())
-                    send_keyboard_event(self.dev, mods, keys_to_send)
-                    print(f"send_keyboard_event->mods:{mods},keys:{keys_to_send}")
+                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
 
-                # Send release for all keys + modifiers
-                self.release()
-                print(f"released->mods:{mods},keys:{keys_to_send}")              
+                # Send all modifiers + last to 1st key de-aggregated sequentially
+                while len(keys_to_send) > 0:
+                    keys.append(keys_to_send.pop())
+                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
+
+                # Send last to 1st modifier de-aggregated sequentially
+                while len(mods_to_send) > 0:
+                    mods.append(mods_to_send.pop())
+                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
 
             # Wait before next char type
             if delay > 0:
