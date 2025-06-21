@@ -16,15 +16,26 @@ def create_empty_file(dev_path):
     with open(dev_path, "w") as f:
         f.write("")
 
-def send_keyboard_event_data(mods, keys):
+def get_device_data(callback):
     with temp_path() as dev_path:
         create_empty_file(dev_path)
         with Device(dev_path) as dev:
             hid_file = dev.get_file()
-            send_keyboard_event(hid_file, mods, keys)
+            callback(dev)
             hid_file.seek(0)
             data = hid_file.read()
     return data
+
+def send_keyboard_event_data(mods, keys):
+    return get_device_data(lambda send_keyboard_event_data_callback(dev, mods, keys))
+def send_keyboard_event_data_callback(dev, mods, keys):
+    send_keyboard_event(dev.get_file(), mods, keys)
+
+def type_data(language, text):
+    return get_device_data(lambda type_data_callback(dev, language, text))
+def type_data_callback(dev, language, text):
+    kb = Keyboard(dev, language)
+    kb.type(text)
 
 # Test HID keyboard identity
 
@@ -204,7 +215,7 @@ def test_hid_keyboard_key_q_key_w_key_e_key_r_key_t_key_y():
     data = send_keyboard_event_data(None, [KeyCodes.KEY_Q, KeyCodes.KEY_W, KeyCodes.KEY_E, KeyCodes.KEY_R, KeyCodes.KEY_T, KeyCodes.KEY_Y])
     assert data == b"\x01\x00\x14\x1a\x08\x15\x17\x1c"
 
-# Tests keyboard keys multiple
+# Tests keyboard type keys unique, US layout
 
 
 # switch app: LeftAlt (0x04) + Tab (0x2b)

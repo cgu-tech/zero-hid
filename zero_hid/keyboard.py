@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 class Keyboard:
 
-    def __init__(self, hid: Device) -> None:
+    def __init__(self, hid: Device, language="US") -> None:
         self.set_hid(hid)
-        self.set_layout()
+        self.set_layout(language)
 
     def list_layout(self):
         keymaps_dir = pathlib.Path(__file__).parent.absolute() / "keymaps"
@@ -40,9 +40,10 @@ class Keyboard:
         leds = self.parse_leds(state)
         return leds
 
-    def set_layout(self, language="US"):
+    def set_layout(self, language):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"language:{language}")
+        self.language = language
         self.layout = json.loads(
             pkgutil.get_data(__name__, f"keymaps/{language}.json").decode()
         )
