@@ -10,10 +10,10 @@ from common import read_bytes, temp_path
 # source ~/venv/bin/activate && cd zero-hid
 # sudo chmod 755 run_tests.sh && ./run_tests.sh tests/consumer_test.py
 
-def send_consumer_event_data(mods, keys):
+def send_consumer_event_data(keys):
     with temp_path() as dev_path:
         with open(dev_path, "w+b") as dev:
-            send_consumer_event(dev, mods, keys)
+            send_consumer_event(dev, keys)
             dev.seek(0)
             data = dev.read()
     return data
@@ -27,9 +27,9 @@ def test_identity_report():
 # Tests keyboard modifiers unique
 
 def test_consumer_volume_decrement():
-    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT], None)
+    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
     assert data == b"\x03\xea\x00\x00\x00"
 
 def test_consumer_volume_decrement_volume_increment():
-    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT, ConsumerCodes.CON_VOLUME_INCREMENT], None)
+    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT, ConsumerCodes.CON_VOLUME_INCREMENT])
     assert data == b"\x03\xea\x00\xe9\x00"
