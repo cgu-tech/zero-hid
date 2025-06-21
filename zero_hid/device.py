@@ -1,3 +1,5 @@
+from . import defaults
+
 class Device:
 
     def __init__(self, dev_path=defaults.HID_DEVICE_PATH) -> None:
