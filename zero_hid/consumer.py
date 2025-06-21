@@ -1,5 +1,5 @@
+from . import defaults, Device
 from .hid.consumer import send_consumer_event, send_consumer_event_identity
-from . import defaults
 from collections import deque
 from time import sleep
 from typing import List

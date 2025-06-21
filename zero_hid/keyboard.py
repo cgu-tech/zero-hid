@@ -1,6 +1,6 @@
+from . import defaults, Device
 from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state, LEDState, parse_leds, KEYBOARD_STATE_NONE
 from .hid.keycodes import KeyCodes
-from . import defaults
 from collections import deque
 from time import sleep
 from typing import List
