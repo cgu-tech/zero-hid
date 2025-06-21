@@ -51,56 +51,57 @@ class Keyboard:
     def type(self, text, delay=0):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"text:{text},delay:{delay}")
-        for c in text:
-            if logger.getEffectiveLevel() == logging.DEBUG:
-                logger.debug(f"c:{c}")
-            kb_map = self.layout["Mapping"][c]
-            if kb_map is None:
-                raise ValueError(f"No mapping found for character: {c}")
-
-            # A single char may need one or multiple key combos
-            for combo in kb_map:
-
-                # Retrieve combo mods and keys names
-                mods = combo["Modifiers"]
-                keys = combo["Keys"]
+        if text:
+            for c in text:
                 if logger.getEffectiveLevel() == logging.DEBUG:
-                    logger.debug(f"c:{c} combo->mods:{mods},keys:{keys}")
-
-                # Retrieve combo modifiers and keys codes
-                mods = [KeyCodes[i] for i in mods]
-                keys = [KeyCodes[i] for i in keys]
-
-                mods = deque(mods)
-                keys = deque(keys)
-
-                mods_to_send = []
-                keys_to_send = []
-
-                logger.debug("Send 1st to last modifier aggregated sequentially")
-                while len(mods) > 0:
-                    mods_to_send.append(mods.popleft())
-                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
-
-                logger.debug("Send all modifiers + 1st to last key aggregated sequentially")
-                while len(keys) > 0:
-                    keys_to_send.append(keys.popleft())
-                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
-
-                logger.debug("Send all modifiers + last to 1st key de-aggregated sequentially")
-                while len(keys_to_send) > 0:
-                    keys.append(keys_to_send.pop())
-                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
-
-                logger.debug("Send last to 1st modifier de-aggregated sequentially")
-                while len(mods_to_send) > 0:
-                    mods.append(mods_to_send.pop())
-                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
-
-            if delay > 0:
-                if logger.getEffectiveLevel() == logging.DEBUG:
-                    logger.debug(f"Wait {delay}s before next char type")
-                sleep(delay)
+                    logger.debug(f"c:{c}")
+                kb_map = self.layout["Mapping"][c]
+                if kb_map is None:
+                    raise ValueError(f"No mapping found for character: {c}")
+            
+                # A single char may need one or multiple key combos
+                for combo in kb_map:
+            
+                    # Retrieve combo mods and keys names
+                    mods = combo["Modifiers"]
+                    keys = combo["Keys"]
+                    if logger.getEffectiveLevel() == logging.DEBUG:
+                        logger.debug(f"c:{c} combo->mods:{mods},keys:{keys}")
+            
+                    # Retrieve combo modifiers and keys codes
+                    mods = [KeyCodes[i] for i in mods]
+                    keys = [KeyCodes[i] for i in keys]
+            
+                    mods = deque(mods)
+                    keys = deque(keys)
+            
+                    mods_to_send = []
+                    keys_to_send = []
+            
+                    logger.debug("Send 1st to last modifier aggregated sequentially")
+                    while len(mods) > 0:
+                        mods_to_send.append(mods.popleft())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                    logger.debug("Send all modifiers + 1st to last key aggregated sequentially")
+                    while len(keys) > 0:
+                        keys_to_send.append(keys.popleft())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                    logger.debug("Send all modifiers + last to 1st key de-aggregated sequentially")
+                    while len(keys_to_send) > 0:
+                        keys.append(keys_to_send.pop())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                    logger.debug("Send last to 1st modifier de-aggregated sequentially")
+                    while len(mods_to_send) > 0:
+                        mods.append(mods_to_send.pop())
+                        send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+            
+                if delay > 0:
+                    if logger.getEffectiveLevel() == logging.DEBUG:
+                        logger.debug(f"Wait {delay}s before next char type")
+                    sleep(delay)
 
     def press(self, mods: List[int], keys: List[int], release=True):
         if logger.getEffectiveLevel() == logging.DEBUG:
