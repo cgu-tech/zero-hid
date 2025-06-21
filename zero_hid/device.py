@@ -1,4 +1,6 @@
 from . import defaults
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger(__name__)
 
 class Device:
 
@@ -9,7 +11,10 @@ class Device:
     def open_file(self, dev_path):
         self._clean_resources()
         self.dev_path = dev_path
-        self.file = open(dev_path, "r+b")
+        try:
+            self.file = open(dev_path, "r+b")
+        except Exception as e:
+            logger.exception(f"Unexpected error while opening device {self.dev_path}. error:{e}")
 
     def get_file(self):
         return self.file
@@ -18,9 +23,12 @@ class Device:
         return self
 
     def _clean_resources(self):
-        if self.file:
-            self.file.close()
-            self.file = None
+        try:
+            if self.file:
+                self.file.close()
+                self.file = None
+        except Exception as e:
+            logger.exception(f"Unexpected error while closing device {self.dev_path}. error:{e}")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._clean_resources()
