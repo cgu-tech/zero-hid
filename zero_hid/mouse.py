@@ -87,7 +87,9 @@ class Mouse:
         return self
 
     def _clean_resources(self):
-        self.dev.close()
+        if self.dev:
+            self.dev.close()
+            self.dev = None
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._clean_resources()
