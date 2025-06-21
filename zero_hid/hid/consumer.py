@@ -20,7 +20,7 @@ def send_consumer_event(dev, keys: List[int]) -> None:
 
     # 2 keys (16 bits per key, little endian): 32 bits (4 bytes)
     keys = pack_keys(keys)
-    i = 2
+    i = 1
     for key in keys:
         buf[i] = key & 0xFF         # low byte
         i += 1
