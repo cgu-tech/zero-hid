@@ -9,12 +9,18 @@ from common import read_bytes, temp_path
 # source ~/venv/bin/activate && cd zero-hid
 # sudo chmod 755 run_tests.sh && ./run_tests.sh tests/mouse_test.py
 
+def create_empty_file(dev_path):
+    with open(dev_path, "w") as f:
+        f.write("")
+
 def send_mouse_event_data(buttons, x, y, scroll_x, scroll_y):
     with temp_path() as dev_path:
-        with open(dev_path, "w+b") as dev:
-            send_mouse_event(dev, buttons, x, y, scroll_x, scroll_y)
-            dev.seek(0)
-            data = dev.read()
+        create_empty_file(dev_path)
+        with Device(dev_path) as dev:
+            hid_file = dev.get_file()
+            send_mouse_event(hid_file, buttons, x, y, scroll_x, scroll_y)
+            hid_file.seek(0)
+            data = hid_file.read()
     return data
 
 # Test mouse identity

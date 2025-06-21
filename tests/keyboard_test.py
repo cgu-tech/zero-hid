@@ -10,10 +10,13 @@ from common import read_bytes, temp_path
 # source ~/venv/bin/activate && cd zero-hid
 # sudo chmod 755 run_tests.sh && ./run_tests.sh tests/keyboard_test.py
 
+def create_empty_file(dev_path):
+    with open(dev_path, "w") as f:
+        f.write("")
+
 def send_keyboard_event_data(mods, keys):
     with temp_path() as dev_path:
-        with open(dev_path, "w") as f:
-            f.write("") # Dummy write to create empty file
+        create_empty_file(dev_path)
         with Device(dev_path) as dev:
             hid_file = dev.get_file()
             send_keyboard_event(hid_file, mods, keys)

@@ -10,12 +10,18 @@ from common import read_bytes, temp_path
 # source ~/venv/bin/activate && cd zero-hid
 # sudo chmod 755 run_tests.sh && ./run_tests.sh tests/consumer_test.py
 
+def create_empty_file(dev_path):
+    with open(dev_path, "w") as f:
+        f.write("")
+
 def send_consumer_event_data(keys):
     with temp_path() as dev_path:
-        with open(dev_path, "w+b") as dev:
-            send_consumer_event(dev, keys)
-            dev.seek(0)
-            data = dev.read()
+        create_empty_file(dev_path)
+        with Device(dev_path) as dev:
+            hid_file = dev.get_file()
+            send_consumer_event(hid_file, keys)
+            hid_file.seek(0)
+            data = hid_file.read()
     return data
 
 # Test consumer identity
