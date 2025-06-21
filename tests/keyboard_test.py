@@ -2,7 +2,7 @@ from zero_hid import Device, Keyboard
 from zero_hid.hid.keyboard import send_keyboard_event
 from zero_hid.hid.keycodes import KeyCodes
 from common import read_bytes, temp_path
-from . import MockDevice
+from mockdevice import MockDevice
 import logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
