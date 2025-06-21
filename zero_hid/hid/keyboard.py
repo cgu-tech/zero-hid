@@ -57,6 +57,7 @@ def send_keyboard_event(hid_file, mods: List[int], keys: List[int]):
     hid_write.write_to_hid_interface(hid_file, buf)
 
 def send_keyboard_event_identity(hid_file):
+    logger.debug("Sending identity...")
     send_keyboard_event(hid_file, None, None)
 
 def read_keyboard_state(hid_file, timeout=0.1) -> int | None:

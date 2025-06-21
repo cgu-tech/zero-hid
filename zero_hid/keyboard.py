@@ -1,14 +1,15 @@
 from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, read_keyboard_state, LEDState, parse_leds, KEYBOARD_STATE_NONE
 from .hid.keycodes import KeyCodes
 from . import defaults
+from collections import deque
 from time import sleep
+from typing import List
 import json
 import pkgutil
 import os
 import pathlib
 import logging
-from typing import List
-from collections import deque
+
 
 class Keyboard:
 
@@ -47,7 +48,7 @@ class Keyboard:
 
     def type(self, text, delay=0):
         if logger.getEffectiveLevel() == logging.DEBUG:
-            logger.debug(f"text:{text}")
+            logger.debug(f"text:{text},delay:{delay}")
         for c in text:
             if logger.getEffectiveLevel() == logging.DEBUG:
                 logger.debug(f"c:{c}")
@@ -101,14 +102,14 @@ class Keyboard:
 
     def press(self, mods: List[int], keys: List[int], release=True):
         if logger.getEffectiveLevel() == logging.DEBUG:
-            logger.debug(f"Pressing...")
+            logger.debug(f"mods:{mods},keys:{keys},release={release}")
         send_keyboard_event(self.hid_file(), mods, keys)
         if release:
             self.release()
 
     def release(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
-            logger.debug(f"Releasing...")
+            logger.debug("Releasing...")
         send_keyboard_event_identity(self.hid_file())
 
     def set_hid(self, hid: Device):

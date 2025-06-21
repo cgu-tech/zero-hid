@@ -12,6 +12,9 @@ def pack_keys(keys: List[int]) -> List[int]:
     return keys
 
 def send_consumer_event(hid_file, keys: List[int]) -> None:
+    if logger.getEffectiveLevel() == logging.DEBUG:
+        logger.debug(f"keys:{keys}")
+
     # Create Consumer report buffer
     buf = [0] * 5
 
@@ -30,4 +33,5 @@ def send_consumer_event(hid_file, keys: List[int]) -> None:
     hid_write.write_to_hid_interface(hid_file, buf)
 
 def send_consumer_event_identity(hid_file):
+    logger.debug("Sending identity...")
     send_consumer_event(hid_file, None)

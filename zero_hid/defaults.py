@@ -1,1 +1,1 @@
-DEVICE_PATH = "/dev/hidg0"
+HID_DEVICE_PATH = "/dev/hidg0"

@@ -27,11 +27,7 @@ def _write_to_hid_interface_immediately(hid_file, buffer):
 
 def write_to_hid_interface(hid_file, buffer):
     if logger.getEffectiveLevel() == logging.DEBUG:
-        logger.debug(
-            "writing to HID interface %s: %s",
-            hid_file,
-            " ".join(["0x%02x" % x for x in buffer]),
-        )
+        logger.debug("writing to HID interface %s: %s...", hid_file, " ".join(["0x%02x" % x for x in buffer]))
 
     # Submit the HID write to the thread pool
     future = _thread_pool.submit(_write_to_hid_interface_immediately, hid_file, buffer)

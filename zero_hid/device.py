@@ -1,6 +1,6 @@
 class Device:
 
-    def __init__(self, dev_path=defaults.DEVICE_PATH) -> None:
+    def __init__(self, dev_path=defaults.HID_DEVICE_PATH) -> None:
         self.open_file(dev_path)
 
     def open_file(self, dev_path):
