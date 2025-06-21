@@ -1,4 +1,4 @@
-from zero_hid import Consumer
+from zero_hid import Device, Consumer
 from zero_hid.hid.consumer import send_consumer_event
 from zero_hid.hid.consumercodes import ConsumerCodes
 from common import read_bytes, temp_path

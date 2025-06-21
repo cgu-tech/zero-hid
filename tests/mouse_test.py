@@ -1,4 +1,4 @@
-from zero_hid import Mouse
+from zero_hid import Device, Mouse
 from zero_hid.hid.mouse import send_mouse_event, MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE
 from common import read_bytes, temp_path
 
