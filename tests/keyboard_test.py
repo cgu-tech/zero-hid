@@ -227,7 +227,7 @@ def test_keyboard_type_us_empty():
 
 def test_keyboard_type_us_q():
     data = type_data("US", "q")
-    assert data == b"\x01\x00\x14\x00\x00\x00\x00\x00" + b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    assert data == b"\x01\x00\x14\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00"
 
 def test_keyboard_type_us_w():
     data = type_data("US", "w")
