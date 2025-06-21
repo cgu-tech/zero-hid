@@ -2,6 +2,9 @@ from zero_hid import Device, Consumer
 from zero_hid.hid.consumer import send_consumer_event
 from zero_hid.hid.consumercodes import ConsumerCodes
 from common import read_bytes, temp_path
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 # To install tests dependencies:
 # source ~/venv/bin/activate && pip install pytest
