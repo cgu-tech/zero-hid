@@ -15,9 +15,10 @@ def send_keyboard_event_data(mods, keys):
         with open(dev_path, "w") as f:
             f.write("") # Dummy write to create empty file
         with Device(dev_path) as dev:
-            send_keyboard_event(dev.get_file(), mods, keys)
-            dev.seek(0)
-            data = dev.read()
+            hid_file = dev.get_file()
+            send_keyboard_event(hid_file, mods, keys)
+            hid_file.seek(0)
+            data = hid_file.read()
     return data
 
 # Test keyboard identity
