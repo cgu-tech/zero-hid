@@ -119,7 +119,7 @@ class Keyboard:
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], KeyCodes.KEY_TAB)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], [KeyCodes.KEY_TAB])
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], None)
         send_keyboard_event(self.hid_file(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
@@ -129,7 +129,7 @@ class Keyboard:
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], KeyCodes.KEY_D)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_D])
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
         send_keyboard_event(self.hid_file(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
@@ -139,7 +139,7 @@ class Keyboard:
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], KeyCodes.KEY_UP)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_UP])
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
         send_keyboard_event(self.hid_file(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
@@ -149,7 +149,7 @@ class Keyboard:
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], KeyCodes.KEY_P)
+        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_P])
         send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
         send_keyboard_event(self.hid_file(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:

@@ -21,7 +21,9 @@ def pack_keys(keys: List[int]) -> List[int]:
     """Pack a signed integer value into 12 bits 2's complement."""
     if not keys:
         return []
-    if len(keys) > 6:
+    if isinstance(keys, int):
+        keys = [keys]
+    elif len(keys) > 6:
         raise ValueError("Too many keyboard keys: HID supports up to 6 simultaneous key presses.")
     return keys
 

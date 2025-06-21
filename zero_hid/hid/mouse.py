@@ -21,6 +21,8 @@ def pack_signed_12bit(value):
 def reduce_values(values: List[int]):
     if not values:
         return 0x00
+    if isinstance(values, int):
+        return values
     if len(values) == 1:
         values = values[0]
     else:
