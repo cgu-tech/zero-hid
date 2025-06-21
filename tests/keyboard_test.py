@@ -39,6 +39,36 @@ def type_data_callback(dev, language, text):
     kb = Keyboard(dev, language)
     kb.type(text)
 
+def press_data(mods, keys, release):
+    return get_device_data(lambda dev: press_data_callback(dev, mods, keys, release))
+def press_data_callback(dev, mods, keys, release):
+    kb = Keyboard(dev)
+    kb.press(mods, keys, release)
+
+def combo_switch_app_data():
+    return get_device_data(lambda dev: combo_switch_app_data_callback(dev))
+def combo_switch_app_data_callback(dev):
+    kb = Keyboard(dev)
+    kb.combo_switch_app()
+
+def combo_show_desktop_data():
+    return get_device_data(lambda dev: combo_show_desktop_data_callback(dev))
+def combo_show_desktop_data_callback(dev):
+    kb = Keyboard(dev)
+    kb.combo_show_desktop()
+
+def combo_maximize_window_data():
+    return get_device_data(lambda dev: combo_maximize_window_data_callback(dev))
+def combo_maximize_window_data_callback(dev):
+    kb = Keyboard(dev)
+    kb.combo_maximize_window()
+
+def combo_switch_display_data():
+    return get_device_data(lambda dev: combo_switch_display_data_callback(dev))
+def combo_switch_display_data_callback(dev):
+    kb = Keyboard(dev)
+    kb.combo_switch_display()
+
 # Test HID keyboard identity
 
 def test_hid_keyboard_identity_report():
@@ -352,30 +382,57 @@ def test_keyboard_type_fr_A_umlaut():
         b"\x01\x00\x00\x00\x00\x00\x00\x00"
     )
 
-# switch app: LeftAlt (0x04) + Tab (0x2b)
 
-# settings: Application (0x65)
+# Test keyboard press unique
+
+
+def test_keyboard_press_application():
+    data = press_data(None,[KeyCodes.KEY_COMPOSE])
+    assert data == b"\x01\x00\x65\x00\x00\x00\x00\x00"
+    data = press_data(None,None)
+    assert data == b"\x01\x00\x00\x00\x00\x00\x00\x00"
+
+
+
+# Tests keyboard hardcoded combos
+
+
+# switch app: LeftAlt (0x04) + Tab (0x2b)
+def test_keyboard_combo_switch_app():
+    data = combo_switch_app_data()
+    assert data == (
+        b"\x01\x04\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x04\x2b\x00\x00\x00\x00\x00" +
+        b"\x01\x04\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    )
 
 # reduce all and show desktop: Left GUI (0x08) + 'd and D' (0x07)
+def test_keyboard_type_fr_show_desktop():
+    data = combo_show_desktop_data()
+    assert data == (
+        b"\x01\x08\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x08\x07\x00\x00\x00\x00\x00" +
+        b"\x01\x08\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    )
 
 # maximize: Left GUI (0x08) + UpArrow (0x52)
+def test_keyboard_combo_maximize_window():
+    data = combo_maximize_window_data()
+    assert data == (
+        b"\x01\x08\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x08\x52\x00\x00\x00\x00\x00" +
+        b"\x01\x08\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    )
 
 # switch display: Left GUI (0x08) + 'p and P' (0x13)
-
-
-#def test_typing():
-#    with temp_path() as p:
-#        k = Keyboard(p)
-#        k.type("Hello world!")
-#        data = read_bytes(p)
-#    expect = b"\x02\x00\x0b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x08\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00,\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x1a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x15\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x0f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x07\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-#    assert expect == data
-#
-#
-#def test_release():
-#    with temp_path() as p:
-#        k = Keyboard(p)
-#        k.release()
-#        data = read_bytes(p)
-#
-#    assert b"\x00\x00\x00\x00\x00\x00\x00\x00" == data
+def test_keyboard_combo_switch_display():
+    data = combo_switch_display_data()
+    assert data == (
+        b"\x01\x08\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x08\x13\x00\x00\x00\x00\x00" +
+        b"\x01\x08\x00\x00\x00\x00\x00\x00" +
+        b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    )
