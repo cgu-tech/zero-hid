@@ -288,11 +288,11 @@ def test_keyboard_type_fr_empty():
     assert data == b""
 
 def test_keyboard_type_fr_a():
-    data = type_data("FR", "q")
+    data = type_data("FR", "a")
     assert data == b"\x01\x00\x14\x00\x00\x00\x00\x00" + b"\x01\x00\x00\x00\x00\x00\x00\x00"
 
 def test_keyboard_type_fr_z():
-    data = type_data("FR", "w")
+    data = type_data("FR", "z")
     assert data == b"\x01\x00\x1a\x00\x00\x00\x00\x00" + b"\x01\x00\x00\x00\x00\x00\x00\x00"
 
 def test_keyboard_type_fr_e():
@@ -314,11 +314,11 @@ def test_keyboard_type_fr_y():
 # Tests keyboard type keys multiple, FR layout
 
 def test_keyboard_type_fr_A():
-    data = type_data("FR", "Q")
+    data = type_data("FR", "A")
     assert data == b"\x01\x02\x00\x00\x00\x00\x00\x00" + b"\x01\x02\x14\x00\x00\x00\x00\x00" + b"\x01\x02\x00\x00\x00\x00\x00\x00" + b"\x01\x00\x00\x00\x00\x00\x00\x00"
 
 def test_keyboard_type_fr_Z():
-    data = type_data("FR", "W")
+    data = type_data("FR", "Z")
     assert data == b"\x01\x02\x00\x00\x00\x00\x00\x00" + b"\x01\x02\x1a\x00\x00\x00\x00\x00" + b"\x01\x02\x00\x00\x00\x00\x00\x00" + b"\x01\x00\x00\x00\x00\x00\x00\x00"
 
 def test_keyboard_type_fr_E():
