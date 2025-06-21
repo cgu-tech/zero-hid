@@ -216,6 +216,8 @@ def test_hid_keyboard_key_q_key_w_key_e_key_r_key_t_key_y():
     assert data == b"\x01\x00\x14\x1a\x08\x15\x17\x1c"
 
 # Tests keyboard type keys unique, US layout
+    data = type_data("US", None)
+    assert data == b""
 
 
 # switch app: LeftAlt (0x04) + Tab (0x2b)
