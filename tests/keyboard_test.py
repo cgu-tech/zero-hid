@@ -1,4 +1,4 @@
-from zero_hid import Keyboard
+from zero_hid import Device, Keyboard
 from zero_hid.hid.keyboard import send_keyboard_event
 from zero_hid.hid.keycodes import KeyCodes
 from common import read_bytes, temp_path
@@ -12,8 +12,8 @@ from common import read_bytes, temp_path
 
 def send_keyboard_event_data(mods, keys):
     with temp_path() as dev_path:
-        with open(dev_path, "w+b") as dev:
-            send_keyboard_event(dev, mods, keys)
+        with Device(dev_path) as dev:
+            send_keyboard_event(dev.get_file(), mods, keys)
             dev.seek(0)
             data = dev.read()
     return data
