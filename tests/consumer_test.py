@@ -27,23 +27,44 @@ def test_identity_report():
 # Tests consumer key unique
 
 def test_consumer_ac_back():
-    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
+    data = send_consumer_event_data([ConsumerCodes.CON_AC_BACK])
     assert data == b"\x03\x24\x02\x00\x00"
 
 def test_consumer_ac_home():
-    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
+    data = send_consumer_event_data([ConsumerCodes.CON_AC_HOME])
     assert data == b"\x03\x23\x02\x00\x00"
 
+def test_consumer_ac_search():
+    data = send_consumer_event_data([ConsumerCodes.CON_AC_SEARCH])
+    assert data == b"\x03\x21\x02\x00\x00"
 
 
 
+def test_consumer_scan_previous_track():
+    data = send_consumer_event_data([ConsumerCodes.CON_SCAN_PREVIOUS_TRACK])
+    assert data == b"\x03\xb6\x00\x00\x00"
+
+def test_consumer_play_pause():
+    data = send_consumer_event_data([ConsumerCodes.CON_PLAY_PAUSE])
+    assert data == b"\x03\xcd\x00\x00\x00"
+
+def test_consumer_scan_next_track():
+    data = send_consumer_event_data([ConsumerCodes.CON_SCAN_NEXT_TRACK])
+    assert data == b"\x03\xb5\x00\x00\x00"
 
 
 
+def test_consumer_mute():
+    data = send_consumer_event_data([ConsumerCodes.CON_MUTE])
+    assert data == b"\x03\xe2\x00\x00\x00"
 
 def test_consumer_volume_decrement():
     data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
     assert data == b"\x03\xea\x00\x00\x00"
+
+def test_consumer_volume_increment():
+    data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_INCREMENT])
+    assert data == b"\x03\xe9\x00\x00\x00"
 
 # Tests consumer key multiple
 
