@@ -12,6 +12,8 @@ from common import read_bytes, temp_path
 
 def send_keyboard_event_data(mods, keys):
     with temp_path() as dev_path:
+        with open(dev_path, "w") as f:
+            pass
         with Device(dev_path) as dev:
             send_keyboard_event(dev.get_file(), mods, keys)
             dev.seek(0)
