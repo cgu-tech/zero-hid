@@ -33,6 +33,9 @@ def reduce_values(values: List[int]):
     return values
 
 def send_keyboard_event(hid_file, mods: List[int], keys: List[int]):
+    if logger.getEffectiveLevel() == logging.DEBUG:
+        logger.debug(f"mods:{mods},keys:{keys}")
+
     # Create Keyboard report buffer
     buf = [0] * 8
 
@@ -57,15 +60,8 @@ def send_keyboard_event_identity(hid_file):
     send_keyboard_event(hid_file, None, None)
 
 def read_keyboard_state(hid_file, timeout=0.1) -> int | None:
-    """
-    Reads the LED output report (Report ID 0x0E) from the HID device in non-blocking mode.
+    logger.debug("Reading HID LED report...")
 
-    Parameters:
-        hid_file (file-like object): An open HID device in 'r+b' mode.
-
-    Returns:
-        int | None: A byte representing the LED bitfield if available, or None if no data.
-    """
     # Set the file descriptor to non-blocking
     fd = hid_file.fileno()
     fl = os.O_NONBLOCK
@@ -88,8 +84,10 @@ def read_keyboard_state(hid_file, timeout=0.1) -> int | None:
             # Bit 4: Kana
             # Bits 5-7: Padding (unused)
             return data[1] & 0b00011111
-    except BlockingIOError:
-        pass
+    except BlockingIOError as e:
+        logger.error(f"Non-blocking read failed: {e}")
+    except Exception as e:
+        logger.exception("Unexpected error while reading HID LED report.")
     finally:
         os.set_blocking(fd, orig_fl)
 
