@@ -1,11 +1,9 @@
 {
-	"Name": "DE_ASCII",
-	"Description": "German ASCII to USB Keyboard report mapping",
-	"Mapping": {
-		"\t": [{"Modifiers": [], "Keys": ["KEY_TAB"]}],
-		"\n": [{"Modifiers": [], "Keys": ["KEY_ENTER"]}],
+    "Name": "DE_ASCII",
+    "Description": "German ASCII to USB Keyboard report mapping",
+    "Mapping": {
 
-		" ": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
+        " ": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
         "!": [{"Modifiers": ["MOD_LEFT_SHIFT"],	"Keys": ["KEY_1"]}],
         "\"": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_2"]}],
         "#": [{"Modifiers": [],	"Keys": ["KEY_BACKSLASH"]}],

@@ -2,10 +2,7 @@
 	"Name": "CH",
 	"Description": "Swiss German to USB Keyboard report mapping",
 	"Mapping": {
-	"\t": [{"Modifiers": [], "Keys": ["KEY_TAB"]}],
-	"\n": [{"Modifiers": [], "Keys": ["KEY_ENTER"]}],
 
-	" ": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
         "!": [{"Modifiers": ["MOD_LEFT_SHIFT"],	"Keys": ["KEY_RIGHTBRACE"]}],
         "\"": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_2"]}],
         "#": [{"Modifiers": ["MOD_RIGHT_ALT"],	"Keys": ["KEY_3"]}],

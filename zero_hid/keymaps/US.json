@@ -1,9 +1,7 @@
 {
-	"Name": "US",
-	"Description": "EN-US USB Keyboard report mapping",
-	"Mapping": {
-            "\t": [{"Modifiers": [], "Keys": ["KEY_TAB"]}],
-            "\n": [{"Modifiers": [], "Keys": ["KEY_ENTER"]}],
+    "Name": "US",
+    "Description": "EN-US USB Keyboard report mapping",
+    "Mapping": {
 
             " ": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
             "!": [{"Modifiers": ["MOD_LEFT_SHIFT"],	"Keys": ["KEY_1"]}],

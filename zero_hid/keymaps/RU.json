@@ -1,7 +1,8 @@
 {
-	"Name": "RU",
-	"Description": "Russian USB Keyboard report mapping",
-	"Mapping": {
+    "Name": "RU",
+    "Description": "Russian USB Keyboard report mapping",
+    "Mapping": {
+
             "\"": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_2"]}],
             ";": [{"Modifiers": ["MOD_LEFT_SHIFT"],	"Keys": ["KEY_4"]}],
             ":": [{"Modifiers": ["MOD_LEFT_SHIFT"],	"Keys": ["KEY_6"]}],
