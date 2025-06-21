@@ -40,6 +40,12 @@ def test_consumer_ac_search():
 
 
 
+def test_consumer_al_consumer_control_config():
+    data = send_consumer_event_data([ConsumerCodes.CON_AL_CONSUMER_CONTROL_CONFIGURATION])
+    assert data == b"\x03\x83\x01\x00\x00"
+
+
+
 def test_consumer_scan_previous_track():
     data = send_consumer_event_data([ConsumerCodes.CON_SCAN_PREVIOUS_TRACK])
     assert data == b"\x03\xb6\x00\x00\x00"
