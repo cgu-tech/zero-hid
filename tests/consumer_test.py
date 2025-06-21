@@ -26,48 +26,62 @@ def test_identity_report():
 
 # Tests consumer key unique
 
+# return
 def test_consumer_ac_back():
     data = send_consumer_event_data([ConsumerCodes.CON_AC_BACK])
     assert data == b"\x03\x24\x02\x00\x00"
 
+# home
 def test_consumer_ac_home():
     data = send_consumer_event_data([ConsumerCodes.CON_AC_HOME])
     assert data == b"\x03\x23\x02\x00\x00"
 
+# switch app: LeftAlt (0x04) + Tab (0x2b)
+
+# settings: Application (0x65)
+
+# magnifying glass
 def test_consumer_ac_search():
     data = send_consumer_event_data([ConsumerCodes.CON_AC_SEARCH])
     assert data == b"\x03\x21\x02\x00\x00"
 
+# reduce all and show desktop: Left GUI (0x08) + 'd and D' (0x07)
 
+# maximize: Left GUI (0x08) + UpArrow (0x52)
 
+# switch display: Left GUI (0x08) + 'p and P' (0x13)
+
+# musical note
 def test_consumer_al_consumer_control_config():
     data = send_consumer_event_data([ConsumerCodes.CON_AL_CONSUMER_CONTROL_CONFIGURATION])
     assert data == b"\x03\x83\x01\x00\x00"
 
-
-
+# |<<
 def test_consumer_scan_previous_track():
     data = send_consumer_event_data([ConsumerCodes.CON_SCAN_PREVIOUS_TRACK])
     assert data == b"\x03\xb6\x00\x00\x00"
 
+# >||
 def test_consumer_play_pause():
     data = send_consumer_event_data([ConsumerCodes.CON_PLAY_PAUSE])
     assert data == b"\x03\xcd\x00\x00\x00"
 
+# >>|
 def test_consumer_scan_next_track():
     data = send_consumer_event_data([ConsumerCodes.CON_SCAN_NEXT_TRACK])
     assert data == b"\x03\xb5\x00\x00\x00"
 
-
-
+# VOL X
 def test_consumer_mute():
     data = send_consumer_event_data([ConsumerCodes.CON_MUTE])
     assert data == b"\x03\xe2\x00\x00\x00"
 
+# VOL -
 def test_consumer_volume_decrement():
     data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_DECREMENT])
     assert data == b"\x03\xea\x00\x00\x00"
 
+# VOL +
 def test_consumer_volume_increment():
     data = send_consumer_event_data([ConsumerCodes.CON_VOLUME_INCREMENT])
     assert data == b"\x03\xe9\x00\x00\x00"
