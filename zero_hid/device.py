@@ -10,6 +10,8 @@ class Device:
 
     def open_file(self, dev_path):
         self._clean_resources()
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Opening dev_path:{dev_path}...")
         self.dev_path = dev_path
         try:
             self.file = open(dev_path, "r+b")
