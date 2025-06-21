@@ -387,11 +387,10 @@ def test_keyboard_type_fr_A_umlaut():
 
 
 def test_keyboard_press_application():
-    data = press_data(None,[KeyCodes.KEY_COMPOSE])
+    data = press_data(None,[KeyCodes.KEY_COMPOSE],release=False)
     assert data == b"\x01\x00\x65\x00\x00\x00\x00\x00"
-    data = press_data(None,None)
+    data = press_data(None,None,release=False)
     assert data == b"\x01\x00\x00\x00\x00\x00\x00\x00"
-
 
 
 # Tests keyboard hardcoded combos
