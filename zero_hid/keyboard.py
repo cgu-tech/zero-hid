@@ -9,6 +9,7 @@ import pkgutil
 import os
 import pathlib
 import logging
+logger = logging.getLogger(__name__)
 
 
 class Keyboard:

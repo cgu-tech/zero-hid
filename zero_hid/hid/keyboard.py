@@ -1,9 +1,11 @@
 from . import write as hid_write
 from functools import reduce
-import operator
 from typing import List, TypedDict
+import operator
 import os
 import select
+import logging
+logger = logging.getLogger(__name__)
 
 KEYBOARD_STATE_NONE = 0b00000
 KEYBOARD_REPORT_ID = 0x01  # Report ID for Keyboard

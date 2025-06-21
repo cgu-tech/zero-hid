@@ -4,7 +4,7 @@ from collections import deque
 from time import sleep
 from typing import List
 import logging
-
+logger = logging.getLogger(__name__)
 
 class Consumer:
 

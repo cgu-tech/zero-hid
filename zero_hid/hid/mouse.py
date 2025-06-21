@@ -1,7 +1,9 @@
 from . import write as hid_write
 from functools import reduce
-import operator
 from typing import List
+import operator
+import logging
+logger = logging.getLogger(__name__)
 
 MOUSE_REPORT_ID     = 0x02  # Report ID for Mouse
 MOUSE_BUTTON_LEFT   = 0x01  # Mouse button code left
