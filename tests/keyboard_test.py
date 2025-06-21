@@ -20,13 +20,11 @@ def create_empty_file(dev_path):
         f.write("")
 
 def get_device_data(callback):
-    with temp_path() as dev_path:
-        create_empty_file(dev_path)
-        with Device(dev_path) as dev:
-            hid_file = dev.get_file()
-            callback(dev)
-            hid_file.seek(0)
-            data = hid_file.read()
+    with MockDevice() as dev:
+        hid_file = dev.get_file()
+        callback(dev)
+        hid_file.seek_for_test(0)
+        data = hid_file.read()
     return data
 
 def send_keyboard_event_data(mods, keys):
