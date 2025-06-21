@@ -243,7 +243,7 @@
             "F23": [{"Modifiers": [], "Keys": ["KEY_F23"]}],
             "F24": [{"Modifiers": [], "Keys": ["KEY_F24"]}],
 
-            "â": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE","KEY_Q"]}],
+            "â": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_Q"]}],
             "ã": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": [], "Keys": ["KEY_Q"]}],
             "ä": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_Q"]}],
             "À": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_7"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_Q"]}],
@@ -251,20 +251,20 @@
             "Ã": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_Q"]}],
             "Ä": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_Q"]}],
 
-            "ê": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE","KEY_E"]}],
+            "ê": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_E"]}],
             "ë": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_E"]}],
             "È": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_7"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_E"]}],
             "Ê": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_E"]}],
             "Ë": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_E"]}],
 
-            "î": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE","KEY_I"]}],
+            "î": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_I"]}],
             "ï": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_I"]}],
             "ì": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_7"]},{"Modifiers": [], "Keys": ["KEY_I"]}],
             "Î": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_I"]}],
             "Ï": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_I"]}],
             "Ì": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_7"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_I"]}],
 
-            "ô": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE","KEY_O"]}],
+            "ô": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_O"]}],
             "ò": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_7"]},{"Modifiers": [], "Keys": ["KEY_O"]}],
             "õ": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": [], "Keys": ["KEY_O"]}],
             "ö": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_O"]}],
@@ -273,7 +273,7 @@
             "Õ": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_2"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_O"]}],
             "Ö": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_O"]}],
 
-            "û": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE","KEY_U"]}],
+            "û": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_U"]}],
             "ü": [{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": [], "Keys": ["KEY_U"]}],
             "Ù": [{"Modifiers": ["MOD_RIGHT_ALT"], "Keys": ["KEY_7"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_U"]}],
             "Û": [{"Modifiers": [], "Keys": ["KEY_LEFTBRACE"]},{"Modifiers": ["MOD_LEFT_SHIFT"], "Keys": ["KEY_U"]}],
