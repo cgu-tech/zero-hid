@@ -1,4 +1,4 @@
-from . import MockFile
+from mockfile import MockFile
 
 class MockDevice:
     def __init__(self):
