@@ -80,7 +80,7 @@ class Keyboard:
                 combo = self.combos.get(c)
                 if combo is None:
                     raise ValueError(f"No mapping found for character: {c}")
-                execute_combo(c, combo)
+                self.execute_combo(c, combo)
                 if delay > 0:
                     if logger.getEffectiveLevel() == logging.DEBUG:
                         logger.debug(f"Wait {delay}s before next char type")
