@@ -27,12 +27,12 @@ def get_device_data(callback):
     return data
 
 def send_keyboard_event_data(mods, keys):
-    return get_device_data(lambda send_keyboard_event_data_callback(dev, mods, keys))
+    return get_device_data(lambda dev: send_keyboard_event_data_callback(dev, mods, keys))
 def send_keyboard_event_data_callback(dev, mods, keys):
     send_keyboard_event(dev.get_file(), mods, keys)
 
 def type_data(language, text):
-    return get_device_data(lambda type_data_callback(dev, language, text))
+    return get_device_data(lambda dev: type_data_callback(dev, language, text))
 def type_data_callback(dev, language, text):
     kb = Keyboard(dev, language)
     kb.type(text)
