@@ -1,5 +1,6 @@
 from . import write as hid_write
 from typing import List
+import logging
 
 CONSUMER_REPORT_ID = 0x03  # Report ID for Consumer Control
 
