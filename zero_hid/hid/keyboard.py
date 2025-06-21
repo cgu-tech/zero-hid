@@ -32,7 +32,7 @@ def reduce_values(values: List[int]):
         values = reduce(operator.or_, values, 0)
     return values
 
-def send_keyboard_event(dev, mods: List[int], keys: List[int]):
+def send_keyboard_event(hid_file, mods: List[int], keys: List[int]):
     # Create Keyboard report buffer
     buf = [0] * 8
 
@@ -51,35 +51,35 @@ def send_keyboard_event(dev, mods: List[int], keys: List[int]):
         i += 1
 
     # Send keyboard event
-    hid_write.write_to_hid_interface(dev, buf)
+    hid_write.write_to_hid_interface(hid_file, buf)
 
-def send_keyboard_event_identity(dev):
-    send_keyboard_event(dev, None, None)
+def send_keyboard_event_identity(hid_file):
+    send_keyboard_event(hid_file, None, None)
 
-def read_keyboard_state(dev, timeout=0.1) -> int | None:
+def read_keyboard_state(hid_file, timeout=0.1) -> int | None:
     """
     Reads the LED output report (Report ID 0x0E) from the HID device in non-blocking mode.
 
     Parameters:
-        dev (file-like object): An open HID device in 'r+b' mode.
+        hid_file (file-like object): An open HID device in 'r+b' mode.
 
     Returns:
         int | None: A byte representing the LED bitfield if available, or None if no data.
     """
     # Set the file descriptor to non-blocking
-    fd = dev.fileno()
+    fd = hid_file.fileno()
     fl = os.O_NONBLOCK
     orig_fl = os.get_blocking(fd)
     os.set_blocking(fd, False)
 
     try:
         # Wait up to 100ms for data to be ready
-        rlist, _, _ = select.select([dev], [], [], timeout)
+        rlist, _, _ = select.select([hid_file], [], [], timeout)
         if not rlist:
             return None
 
         # Attempt to read 2 bytes (Report ID + LED bits)
-        data = dev.read(2)
+        data = hid_file.read(2)
         if data and len(data) == 2 and data[0] == 0x0E:
             # Bit 0: Num Lock
             # Bit 1: Caps Lock

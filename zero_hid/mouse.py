@@ -10,17 +10,10 @@ class RelativeMoveRangeError(Exception):
 
 
 class Mouse:
-    def __init__(self, dev=None) -> None:
-        self.__setup_device(dev)
-        self.buttons_state = MOUSE_BUTTONS_NONE
 
-    def __setup_device(self, dev):
-        if dev is None:
-            dev = defaults.MOUSE_PATH
-        if not hasattr(dev, "write"):  # check if file like object
-            self.dev = open(dev, "r+b")
-        else:
-            self.dev = dev
+    def __init__(self, hid: Device) -> None:
+        self.set_hid(hid)
+        self.buttons_state = MOUSE_BUTTONS_NONE
 
     def left_click(self, release=True):
         self.buttons_click([MOUSE_BUTTON_LEFT], release)
@@ -32,7 +25,7 @@ class Mouse:
         self.buttons_click([MOUSE_BUTTON_MIDDLE], release)
 
     def buttons_click(self, buttons: List[int], release=True):
-        send_mouse_event(self.dev, buttons, 0, 0, 0, 0)
+        send_mouse_event(self.hid_file(), buttons, 0, 0, 0, 0)
         self.buttons_state = buttons
         if release:
             self.release()
@@ -41,7 +34,7 @@ class Mouse:
         """
         Release Mouse Buttons
         """
-        send_mouse_event_identity(self.dev)
+        send_mouse_event_identity(self.hid_file())
         self.buttons_state = MOUSE_BUTTONS_NONE
 
     def scroll_y(self, position: int):
@@ -53,7 +46,7 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of y {position} out of range (-127 - 127)"
             )
-        send_mouse_event(self.dev, self.buttons_state, 0, 0, 0, position)
+        send_mouse_event(self.hid_file(), self.buttons_state, 0, 0, 0, position)
 
     def scroll_x(self, position: int):
         """
@@ -64,13 +57,13 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of x: {position} out of range (-127 - 127)"
             )
-        send_mouse_event(self.dev, self.buttons_state, 0, 0, position, 0)
+        send_mouse_event(self.hid_file(), self.buttons_state, 0, 0, position, 0)
 
     def raw(self, buttons_state, x, y, scroll_x, scroll_y):
         """
         Control the way you like
         """
-        send_mouse_event(self.dev, buttons_state, x, y, scroll_x, scroll_y)
+        send_mouse_event(self.hid_file(), buttons_state, x, y, scroll_x, scroll_y)
 
     def move(self, x, y):
         """
@@ -81,18 +74,10 @@ class Mouse:
             raise RelativeMoveRangeError(f"Value of x: {x} out of range (-2047 - 2047)")
         if not -2047 <= y <= 2047:
             raise RelativeMoveRangeError(f"Value of y: {y} out of range (-2047 - 2047)")
-        send_mouse_event(self.dev, self.buttons_state, x, y, 0, 0)
+        send_mouse_event(self.hid_file(), self.buttons_state, x, y, 0, 0)
 
-    def __enter__(self):
-        return self
+    def set_hid(self, hid: Device):
+        self.hid = hid
 
-    def _clean_resources(self):
-        if self.dev:
-            self.dev.close()
-            self.dev = None
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._clean_resources()
-
-    def close(self):
-        self._clean_resources()
+    def hid_file(self):
+        return self.hid.get_file()

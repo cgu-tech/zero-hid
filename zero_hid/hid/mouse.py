@@ -25,7 +25,7 @@ def reduce_values(values: List[int]):
         values = reduce(operator.or_, values, 0)
     return values
 
-def send_mouse_event(dev, buttons: List[int], x, y, scroll_x, scroll_y):
+def send_mouse_event(hid_file, buttons: List[int], x, y, scroll_x, scroll_y):
     # Create Mouse report buffer
     buf = [0] * 8
 
@@ -62,7 +62,7 @@ def send_mouse_event(dev, buttons: List[int], x, y, scroll_x, scroll_y):
     buf[7] = scroll_x & 0xFF
 
     # Write the buffer to HID device
-    hid_write.write_to_hid_interface(dev, buf)
+    hid_write.write_to_hid_interface(hid_file, buf)
 
-def send_mouse_event_identity(dev):
-    send_mouse_event(dev, None, 0, 0, 0, 0)
+def send_mouse_event_identity(hid_file):
+    send_mouse_event(hid_file, None, 0, 0, 0, 0)

@@ -11,11 +11,8 @@ from collections import deque
 
 class Keyboard:
 
-    def __init__(self, dev=defaults.KEYBOARD_PATH) -> None:
-        if not hasattr(dev, "write"):  # check if file like object
-            self.dev = open(dev, "r+b")
-        else:
-            self.dev = dev
+    def __init__(self, hid: Device) -> None:
+        self.set_hid(hid)
         self.set_layout()
 
     def list_layout(self):
@@ -29,7 +26,7 @@ class Keyboard:
             print(f"{count}. {name}: {desc}")
 
     def read_state(self) -> LEDState:
-        state = read_keyboard_state(self.dev)
+        state = read_keyboard_state(self.hid_file())
 
         # Return identity when state cannot be read
         if state is None:
@@ -71,25 +68,25 @@ class Keyboard:
                 # Send 1st to last modifier aggregated sequentially
                 while len(mods) > 0:
                     mods_to_send.append(mods.popleft())
-                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
                     print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
 
                 # Send all modifiers + 1st to last key aggregated sequentially
                 while len(keys) > 0:
                     keys_to_send.append(keys.popleft())
-                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
                     print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
 
                 # Send all modifiers + last to 1st key de-aggregated sequentially
                 while len(keys_to_send) > 0:
                     keys.append(keys_to_send.pop())
-                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
                     print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
 
                 # Send last to 1st modifier de-aggregated sequentially
                 while len(mods_to_send) > 0:
                     mods.append(mods_to_send.pop())
-                    send_keyboard_event(self.dev, mods_to_send, keys_to_send)
+                    send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
                     print(f"send_keyboard_event->mods:{mods_to_send},keys:{keys_to_send}")
 
             # Wait before next char type
@@ -97,23 +94,15 @@ class Keyboard:
                 sleep(delay)
 
     def press(self, mods: List[int], keys: List[int], release=True):
-        send_keyboard_event(self.dev, mods, keys)
+        send_keyboard_event(self.hid_file(), mods, keys)
         if release:
             self.release()
 
     def release(self):
-        send_keyboard_event_identity(self.dev)
+        send_keyboard_event_identity(self.hid_file())
 
-    def __enter__(self):
-        return self
+    def set_hid(self, hid: Device):
+        self.hid = hid
 
-    def _clean_resources(self):
-        if self.dev:
-            self.dev.close()
-            self.dev = None
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._clean_resources()
-
-    def close(self):
-        self._clean_resources()
+    def hid_file(self):
+        return self.hid.get_file()
