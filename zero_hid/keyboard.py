@@ -14,10 +14,17 @@ logger = logging.getLogger(__name__)
 
 class Keyboard:
 
-    def __init__(self, hid: Device, language) -> None:
+    LAYOUT_COMMON = "common"
+    LAYOUT_EMPTY = {
+        "Name": "EMPTY",
+        "Description": "Default empty fallback layout, contains no key mappings",
+        "Mapping": {}
+    }
+
+    def __init__(self, hid: Device, language=None) -> None:
         self.key_map = KeyCodes.as_dict()
         self.set_hid(hid)
-        self.common_layout = self.load_layout("common")
+        self.common_layout = self.load_layout(Keyboard.LAYOUT_COMMON)
         self.set_layout(language)
 
     def list_layout(self):
@@ -53,7 +60,17 @@ class Keyboard:
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"language:{language}")
         self.language = language
-        self.layout = self.load_layout(language)
+        if language:
+            try:
+                self.layout = self.load_layout(language)
+            except Exception as e:
+                logger.error(f"Cannot load layout for language:{language}, exception:{e}")
+                logger.warning("Falling back to EMPTY layout")
+                self.layout = Keyboard.LAYOUT_EMPTY
+        else:
+            logger.warning("No layout specified")
+            logger.warning("Falling back to EMPTY layout")
+            self.layout = Keyboard.LAYOUT_EMPTY
         self.build_combos()
 
     def build_combos(self):
