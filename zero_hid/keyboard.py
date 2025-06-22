@@ -3,7 +3,7 @@ from .hid.keyboard import send_keyboard_event, send_keyboard_event_identity, rea
 from .hid.keycodes import KeyCodes
 from collections import deque
 from time import sleep
-from typing import List
+from typing import Dict, List, Tuple, Any
 import json
 import pkgutil
 import os
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class Keyboard:
 
-    def __init__(self, hid: Device, language="US") -> None:
+    def __init__(self, hid: Device, language) -> None:
         self.key_map = KeyCodes.as_dict()
         self.set_hid(hid)
         self.common_layout = self.load_layout("common")
@@ -70,21 +70,54 @@ class Keyboard:
         for combo_name, mapping in mappings.items():
             self.combos[combo_name] = self.build_combo(self.layout, combo_name)
 
+        # Sort combos keys by name length descending, then reverse alphabetical for equal lengths
+        self.combos_keys = sorted(self.combos.keys(), key=lambda k: (-len(k), k[::-1]))
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            logger.debug(f"Builded sorted combos keys:{self.combos_keys}")
+
     def type(self, text, delay=0):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"text:{text},delay:{delay}")
         if text:
-            for c in text:
+            text_combos = self.map_combos(text)
+            for text_combo in text_combos:
+                text_part = text_combo[0]
+                combo = text_combo[1]
                 if logger.getEffectiveLevel() == logging.DEBUG:
-                    logger.debug(f"c:{c}")
-                combo = self.combos.get(c)
+                    logger.debug(f"text_part:{text_part},combo:{combo}")
                 if combo is None:
-                    raise ValueError(f"No mapping found for character: {c}")
-                self.execute_combo(c, combo)
+                    raise ValueError(f"No mapping found for text part:{text_part}")
+                self.execute_combo(combo)
                 if delay > 0:
                     if logger.getEffectiveLevel() == logging.DEBUG:
                         logger.debug(f"Wait {delay}s before next char type")
                     sleep(delay)
+
+    def map_combos(self, text: str) -> List[Tuple[str, Any]]:
+        return self._split_recursive(text, self.combos, self.combos_keys)
+
+    def _split_recursive(self, subs: str, d: Dict[str, Any], keys: List[str]) -> List[Tuple[str, Any]]:
+        if not subs:
+            return []
+
+        for key in keys:
+            idx = subs.find(key)
+            if idx != -1:
+                result = []
+
+                # Recurse into the prefix before the match (if any)
+                if idx > 0:
+                    result.extend(self._split_recursive(subs[:idx], d, keys))
+
+                # Add the matched part
+                result.append((key, d[key]))
+
+                # Recurse into the suffix after the match
+                result.extend(self._split_recursive(subs[idx + len(key):], d, keys))
+                return result
+
+        # No match found at all
+        return [(subs, None)]
 
     def string_to_code(self, codes_strings):
         # Separate known strings and unknown strings
@@ -146,9 +179,9 @@ class Keyboard:
 
         return combo
 
-    def execute_combo(self, combo_name, combo):
+    def execute_combo(self, combo):
         if logger.getEffectiveLevel() == logging.DEBUG:
-            logger.debug(f"combo_name:{combo_name}")
+            logger.debug(f"combo:{combo}")
 
         # Use layout combos for detected symbol
         sequence_index = 0
@@ -158,7 +191,7 @@ class Keyboard:
             mods = sequence["Modifiers"]
             keys = sequence["Keys"]
             if logger.getEffectiveLevel() == logging.DEBUG:
-                logger.debug(f"combo_name:{combo_name} sequence[{sequence_index}]->mods:{mods},keys:{keys}")
+                logger.debug(f"sequence[{sequence_index}]->mods:{mods},keys:{keys}")
 
             mods = deque(mods)
             keys = deque(keys)
