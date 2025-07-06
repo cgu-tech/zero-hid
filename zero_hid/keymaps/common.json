@@ -62,6 +62,7 @@
 
             "SPACE": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
             "SPACEBAR": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
+            " ": [{"Modifiers": [], "Keys": ["KEY_SPACE"]}],
 
             "INSERT": [{"Modifiers": [], "Keys": ["KEY_INSERT"]}],
             "INS": [{"Modifiers": [], "Keys": ["KEY_INSERT"]}],
