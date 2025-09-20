@@ -237,6 +237,16 @@ D=$(mktemp)
 cp "$D" "${USB_GADGET_FUNCTION_KBM_DIR}/report_desc"
 rm -f "$D"
 
+# Microphone function
+USB_GADGET_FUNCTION_AUDIO="uac2.usb0"
+USB_GADGET_FUNCTION_AUDIO_DIR="${USB_GADGET_FUNCTIONS_DIR}/${USB_GADGET_FUNCTION_AUDIO}"
+mkdir -p "${USB_GADGET_FUNCTION_AUDIO_DIR}"
+
+# Basic parameters for microphone
+echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_chmask"   # 1 channel (mono)
+echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_srate" # 16kHz sample rate
+echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_ssize"     # 2 bytes per sample (16-bit sample size)
+
 USB_GADGET_CONFIGS_DIR="${USB_GADGET_DIR}/configs"
 echo "Creating USB gadget configs directory ${USB_GADGET_CONFIGS_DIR}..."
 mkdir -p "${USB_GADGET_CONFIGS_DIR}"
@@ -260,6 +270,9 @@ echo "Config ${USB_GADGET_CONFIG_INDEX_FIRST}: HID gadget" > "${USB_GADGET_CONFI
 
 echo "Binding USB gadget function ${USB_GADGET_FUNCTION_KBM} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
 ln -s "${USB_GADGET_FUNCTION_KBM_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
+
+echo "Binding USB gadget function ${USB_GADGET_FUNCTION_AUDIO} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
+ln -s "${USB_GADGET_FUNCTION_AUDIO_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
 
 echo "Binding USB Device Controllers to UDC..."
 UDC_DEVICE=$(ls /sys/class/udc | head -n 1)
