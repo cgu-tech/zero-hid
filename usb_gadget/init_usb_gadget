@@ -250,7 +250,6 @@ echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_ssize"     # 2 bytes per sample (16
 echo 0 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_chmask"       # Playback disabled (we only do capture)
 echo 0 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_srate"
 echo 0 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_ssize"
-echo 0 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/req_number"
 
 USB_GADGET_CONFIGS_DIR="${USB_GADGET_DIR}/configs"
 echo "Creating USB gadget configs directory ${USB_GADGET_CONFIGS_DIR}..."
