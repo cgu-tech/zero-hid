@@ -24,7 +24,7 @@ USB_GADGET_DEVICE=/dev/hidg0
 if [ -d "${USB_GADGET_DIR}" ]; then
     echo "Removing existing UDC from USB gadget ${USB_GADGET_UDC}..."
     echo "" > "${USB_GADGET_UDC}" || true
-    
+
     echo "Deleting existing USB gadget directory ${USB_GADGET_DIR}..."
     rm -rf "${USB_GADGET_DIR}"
 fi
@@ -238,7 +238,7 @@ cp "$D" "${USB_GADGET_FUNCTION_KBM_DIR}/report_desc"
 rm -f "$D"
 
 # Microphone function
-USB_GADGET_FUNCTION_AUDIO="uac2.usb0"
+USB_GADGET_FUNCTION_AUDIO="uac1.usb0"
 USB_GADGET_FUNCTION_AUDIO_DIR="${USB_GADGET_FUNCTIONS_DIR}/${USB_GADGET_FUNCTION_AUDIO}"
 mkdir -p "${USB_GADGET_FUNCTION_AUDIO_DIR}"
 
@@ -246,6 +246,10 @@ mkdir -p "${USB_GADGET_FUNCTION_AUDIO_DIR}"
 echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_chmask"   # 1 channel (mono)
 echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_srate" # 16kHz sample rate
 echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_ssize"     # 2 bytes per sample (16-bit sample size)
+
+echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_chmask"   # 1 channel (mono)
+echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_srate" # 16kHz sample rate
+echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_ssize"     # 2 bytes per sample (16-bit sample size)
 
 USB_GADGET_CONFIGS_DIR="${USB_GADGET_DIR}/configs"
 echo "Creating USB gadget configs directory ${USB_GADGET_CONFIGS_DIR}..."
