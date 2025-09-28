@@ -1,5 +1,6 @@
 from . import defaults
 from .device import Device
+from .microphone import Microphone
 from .mouse import Mouse
 from .keyboard import Keyboard
 from .hid.keycodes import KeyCodes
