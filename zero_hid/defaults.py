@@ -1,1 +1,2 @@
 HID_DEVICE_PATH = "/dev/hidg0"
+AUX_OUTPUT_DEVICE = "hw:UAC1Gadget,0"
