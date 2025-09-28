@@ -12,12 +12,10 @@ class Microphone:
         format = alsaaudio.PCM_FORMAT_S16_LE
         channels = 1
         rate = 16000
-        periodsize = 128
         output_device = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK, alsaaudio.PCM_NORMAL, out_card)
         output_device.setchannels(channels)
         output_device.setrate(rate)
         output_device.setformat(format)
-        output_device.setperiodsize(periodsize)
         self.output_device = output_device
 
     def write_audio(self, buf) -> None:
