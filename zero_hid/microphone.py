@@ -1,7 +1,5 @@
 from . import defaults
 import alsaaudio
-import argparse
-import struct
 import logging
 logger = logging.getLogger(__name__)
 

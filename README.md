@@ -34,7 +34,7 @@ source ~/venv/bin/activate
 
 4. Install `zero-hid` with `pip`
 ```console
-pip3 install zero-hid
+pip3 install zero-hid pyalsaaudio
 ```
 5. Reboot *if not already!*
 
