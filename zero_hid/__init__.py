@@ -6,4 +6,4 @@ from .hid.keycodes import KeyCodes
 from .consumer import Consumer
 from .hid.consumercodes import ConsumerCodes
 
-__all__ = ["defaults", "Device", "Mouse", "Keyboard", "KeyCodes", "Consumer", "ConsumerCodes"]
+__all__ = ["defaults", "Device", "Microphone", "Mouse", "Keyboard", "KeyCodes", "Consumer", "ConsumerCodes"]
