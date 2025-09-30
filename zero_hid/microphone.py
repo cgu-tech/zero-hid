@@ -9,6 +9,7 @@ class Microphone:
 
     def __init__(self, out_card=defaults.AUX_OUTPUT_DEVICE) -> None:
         self.set_output_card(out_card)
+        self.output_device = None
         self._lock = threading.Lock()  # Prevent race conditions
 
     def set_output_card(self, out_card: str) -> None:
