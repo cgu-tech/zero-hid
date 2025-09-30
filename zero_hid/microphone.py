@@ -35,12 +35,6 @@ class Microphone:
             logger.debug(f"Microphone.write_audio(buf) -> length: {length}")
         with self._lock:
             try:
-                logger.warning('[write_audio] Cards:')
-                for card in alsaaudio.cards():
-                  logger.warning(card)
-                logger.warning('[write_audio] PCMs:')
-                for pcm in alsaaudio.pcms():
-                  logger.warning(pcm)
                 if length > 0:
                     self.start_audio()
                     self.output_device.write(buf)
