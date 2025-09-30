@@ -16,13 +16,12 @@ class Microphone:
         self.out_card = out_card
 
     def start_audio(self) -> None:
-        if logger.getEffectiveLevel() == logging.DEBUG:
-            logger.debug('Cards:')
-            for card in alsaaudio.cards():
-              logger.debug(card)
-            logger.debug('PCMs:')
-            for pcm in alsaaudio.pcms():
-              logger.debug(pcm)
+        logger.warning('Cards:')
+        for card in alsaaudio.cards():
+          logger.warning(card)
+        logger.warning('PCMs:')
+        for pcm in alsaaudio.pcms():
+          logger.warning(pcm)
         if self.output_device is None:
             output_device = alsaaudio.PCM(alsaaudio.PCM_PLAYBACK, alsaaudio.PCM_NORMAL, self.out_card)
             output_device.setchannels(1)
