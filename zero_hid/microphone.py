@@ -38,7 +38,6 @@ class Microphone:
                 if length > 0:
                     self.output_device.write(buf)
             except alsaaudio.ALSAAudioError as e:
-                self.stop_audio()
                 logger.exception(f"Unhandled error in Microphone.write_audio: {e}")
 
     def stop_audio(self) -> None:
