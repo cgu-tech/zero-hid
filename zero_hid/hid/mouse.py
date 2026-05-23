@@ -29,7 +29,7 @@ def reduce_values(values: List[int]):
         values = reduce(operator.or_, values, 0)
     return values
 
-def send_mouse_event(hid_file, buttons: List[int], x, y, scroll_x, scroll_y):
+def send_mouse_event(hid, buttons: List[int], x, y, scroll_x, scroll_y):
     if logger.getEffectiveLevel() == logging.DEBUG:
         logger.debug(f"buttons:{buttons},x:{x},y:{y},scroll_x:{scroll_x},scroll_y:{scroll_y}")
 
@@ -69,8 +69,8 @@ def send_mouse_event(hid_file, buttons: List[int], x, y, scroll_x, scroll_y):
     buf[7] = scroll_x & 0xFF
 
     # Write the buffer to HID device
-    hid_write.write_to_hid_interface(hid_file, buf)
+    hid_write.write_to_hid_interface(hid, buf)
 
-def send_mouse_event_identity(hid_file):
+def send_mouse_event_identity(hid):
     logger.debug("Sending identity...")
-    send_mouse_event(hid_file, None, 0, 0, 0, 0)
+    send_mouse_event(hid, None, 0, 0, 0, 0)

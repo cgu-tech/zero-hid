@@ -21,52 +21,52 @@ def create_empty_file(dev_path):
         f.write("")
 
 def get_device_data(callback):
-    with MockDevice() as dev:
-        hid_file = dev.get_file()
-        callback(dev)
+    with MockDevice() as hid:
+        callback(hid)
+        hid_file = hid.get_file_descriptor()
         hid_file.seek_for_test(0)
         data = hid_file.read()
     return data
 
 def send_keyboard_event_data(mods, keys):
-    return get_device_data(lambda dev: send_keyboard_event_data_callback(dev, mods, keys))
-def send_keyboard_event_data_callback(dev, mods, keys):
-    send_keyboard_event(dev.get_file(), mods, keys)
+    return get_device_data(lambda hid: send_keyboard_event_data_callback(hid, mods, keys))
+def send_keyboard_event_data_callback(hid, mods, keys):
+    send_keyboard_event(hid, mods, keys)
 
 def type_data(language, text):
-    return get_device_data(lambda dev: type_data_callback(dev, language, text))
-def type_data_callback(dev, language, text):
-    kb = Keyboard(dev, language)
+    return get_device_data(lambda hid: type_data_callback(hid, language, text))
+def type_data_callback(hid, language, text):
+    kb = Keyboard(hid, language)
     kb.type(text)
 
 def press_data(mods, keys, release):
-    return get_device_data(lambda dev: press_data_callback(dev, mods, keys, release))
-def press_data_callback(dev, mods, keys, release):
-    kb = Keyboard(dev)
+    return get_device_data(lambda hid: press_data_callback(hid, mods, keys, release))
+def press_data_callback(hid, mods, keys, release):
+    kb = Keyboard(hid)
     kb.press(mods, keys, release)
 
 def combo_switch_app_data():
-    return get_device_data(lambda dev: combo_switch_app_data_callback(dev))
-def combo_switch_app_data_callback(dev):
-    kb = Keyboard(dev)
+    return get_device_data(lambda hid: combo_switch_app_data_callback(hid))
+def combo_switch_app_data_callback(hid):
+    kb = Keyboard(hid)
     kb.combo_switch_app()
 
 def combo_show_desktop_data():
-    return get_device_data(lambda dev: combo_show_desktop_data_callback(dev))
-def combo_show_desktop_data_callback(dev):
-    kb = Keyboard(dev)
+    return get_device_data(lambda hid: combo_show_desktop_data_callback(hid))
+def combo_show_desktop_data_callback(hid):
+    kb = Keyboard(hid)
     kb.combo_show_desktop()
 
 def combo_maximize_window_data():
-    return get_device_data(lambda dev: combo_maximize_window_data_callback(dev))
-def combo_maximize_window_data_callback(dev):
-    kb = Keyboard(dev)
+    return get_device_data(lambda hid: combo_maximize_window_data_callback(hid))
+def combo_maximize_window_data_callback(hid):
+    kb = Keyboard(hid)
     kb.combo_maximize_window()
 
 def combo_switch_display_data():
-    return get_device_data(lambda dev: combo_switch_display_data_callback(dev))
-def combo_switch_display_data_callback(dev):
-    kb = Keyboard(dev)
+    return get_device_data(lambda hid: combo_switch_display_data_callback(hid))
+def combo_switch_display_data_callback(hid):
+    kb = Keyboard(hid)
     kb.combo_switch_display()
 
 # Test HID keyboard identity

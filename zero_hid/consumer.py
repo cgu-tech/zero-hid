@@ -21,12 +21,12 @@ class Consumer:
         logger.debug("Send 1st to last consumer key aggregated sequentially")
         while len(keys) > 0:
             keys_to_send.append(keys.popleft())
-            send_consumer_event(self.hid_file(), keys_to_send)
+            send_consumer_event(self.get_hid(), keys_to_send)
 
         logger.debug("Send last to 1st consumer key de-aggregated sequentially")
         while len(keys_to_send) > 0:
             keys.append(keys_to_send.pop())
-            send_consumer_event(self.hid_file(), keys_to_send)
+            send_consumer_event(self.get_hid(), keys_to_send)
 
         if delay > 0:
             if logger.getEffectiveLevel() == logging.DEBUG:
@@ -36,17 +36,17 @@ class Consumer:
     def press(self, keys: List[int], release=True):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"keys:{keys},release={release}")
-        send_consumer_event(self.hid_file(), keys)
+        send_consumer_event(self.get_hid(), keys)
         if release:
             self.release()
 
     def release(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug("Releasing...")
-        send_consumer_event_identity(self.hid_file())
+        send_consumer_event_identity(self.get_hid())
 
     def set_hid(self, hid: Device):
         self.hid = hid
 
-    def hid_file(self):
-        return self.hid.get_file()
+    def get_hid(self):
+        return self.hid

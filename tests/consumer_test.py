@@ -22,9 +22,9 @@ def create_empty_file(dev_path):
 def send_consumer_event_data(keys):
     with temp_path() as dev_path:
         create_empty_file(dev_path)
-        with Device(dev_path) as dev:
-            hid_file = dev.get_file()
-            send_consumer_event(hid_file, keys)
+        with Device(dev_path) as hid:
+            hid_file = hid.get_file_descriptor()
+            send_consumer_event(hid, keys)
             hid_file.seek(0)
             data = hid_file.read()
     return data

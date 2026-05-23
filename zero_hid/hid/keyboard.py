@@ -36,7 +36,7 @@ def reduce_values(values: List[int]):
         values = reduce(operator.or_, values, 0)
     return values
 
-def send_keyboard_event(hid_file, mods: List[int], keys: List[int]):
+def send_keyboard_event(hid, mods: List[int], keys: List[int]):
     if logger.getEffectiveLevel() == logging.DEBUG:
         logger.debug(f"mods:{mods},keys:{keys}")
 
@@ -58,16 +58,17 @@ def send_keyboard_event(hid_file, mods: List[int], keys: List[int]):
         i += 1
 
     # Send keyboard event
-    hid_write.write_to_hid_interface(hid_file, buf)
+    hid_write.write_to_hid_interface(hid, buf)
 
-def send_keyboard_event_identity(hid_file):
+def send_keyboard_event_identity(hid):
     logger.debug("Sending identity...")
-    send_keyboard_event(hid_file, None, None)
+    send_keyboard_event(hid, None, None)
 
-def read_keyboard_state(hid_file, timeout=0.1) -> int | None:
+def read_keyboard_state(hid, timeout=0.1) -> int | None:
     logger.debug("Reading HID LED report...")
 
     # Set the file descriptor to non-blocking
+    hid_file = hid.get_file_descriptor()
     fd = hid_file.fileno()
     fl = os.O_NONBLOCK
     orig_fl = os.get_blocking(fd)
