@@ -56,23 +56,23 @@ stop_gadget() {
   echo "Deleting existing USB gadget directory ${USB_GADGET_DIR}..."
   if [ -d "${USB_GADGET_DIR}" ]; then
 
-    ## remove function links first
-    #find "${USB_GADGET_DIR}/configs" -type l -delete 2>/dev/null || true
-    #
-    ## unbind functions manually if needed
-    #for f in "${USB_GADGET_DIR}/functions"/*; do
-    #  [ -e "$f" ] || continue
-    #  rmdir "$f" 2>/dev/null || true
-    #done
-    #
-    ## remove function links safely
-    #rm -rf "${USB_GADGET_DIR}/configs" 2>/dev/null || true
-    #rm -rf "${USB_GADGET_DIR}/functions" 2>/dev/null || true
-    #rm -rf "${USB_GADGET_DIR}/strings" 2>/dev/null || true
-    #
-    #rmdir "${USB_GADGET_DIR}" 2>/dev/null || true
+    # remove function links first
+    find "${USB_GADGET_DIR}/configs" -type l -delete 2>/dev/null || true
 
-    rm -rf "${USB_GADGET_DIR}" # Debug only (will print usefull error traces when not working)
+    # unbind functions manually if needed
+    for f in "${USB_GADGET_DIR}/functions"/*; do
+      [ -e "$f" ] || continue
+      rmdir "$f" 2>/dev/null || true
+    done
+
+    # remove function links safely
+    rm -rf "${USB_GADGET_DIR}/configs" 2>/dev/null || true
+    rm -rf "${USB_GADGET_DIR}/functions" 2>/dev/null || true
+    rm -rf "${USB_GADGET_DIR}/strings" 2>/dev/null || true
+
+    rmdir "${USB_GADGET_DIR}" 2>/dev/null || true
+
+    #rm -rf "${USB_GADGET_DIR}" || true # Debug only (will print usefull error traces when not working)
   fi
 }
 
