@@ -34,7 +34,7 @@ class Mouse:
     def buttons_click(self, buttons: List[int], release=True):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"buttons:{buttons},release:{release}")
-        send_mouse_event(self.hid_file(), buttons, 0, 0, 0, 0)
+        send_mouse_event(self.get_hid(), buttons, 0, 0, 0, 0)
         self.buttons_state = buttons
         if release:
             self.release()
@@ -42,7 +42,7 @@ class Mouse:
     def release(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug("Releasing...")
-        send_mouse_event_identity(self.hid_file())
+        send_mouse_event_identity(self.get_hid())
         self.buttons_state = MOUSE_BUTTONS_NONE
 
     def scroll_x(self, position: int):
@@ -52,7 +52,7 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of x: {position} out of range (-127 - 127)"
             )
-        send_mouse_event(self.hid_file(), self.buttons_state, 0, 0, position, 0)
+        send_mouse_event(self.get_hid(), self.buttons_state, 0, 0, position, 0)
 
     def scroll_y(self, position: int):
         if logger.getEffectiveLevel() == logging.DEBUG:
@@ -61,12 +61,12 @@ class Mouse:
             raise RelativeMoveRangeError(
                 f"Value of y {position} out of range (-127 - 127)"
             )
-        send_mouse_event(self.hid_file(), self.buttons_state, 0, 0, 0, position)
+        send_mouse_event(self.get_hid(), self.buttons_state, 0, 0, 0, position)
 
     def raw(self, buttons, x, y, scroll_x, scroll_y):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"buttons:{buttons},x:{x},y:{y},scroll_x:{scroll_x},scroll_y:{scroll_y}")
-        send_mouse_event(self.hid_file(), buttons, x, y, scroll_x, scroll_y)
+        send_mouse_event(self.get_hid(), buttons, x, y, scroll_x, scroll_y)
         self.buttons_state = buttons
 
     def move(self, x, y):
@@ -76,10 +76,10 @@ class Mouse:
             raise RelativeMoveRangeError(f"Value of x: {x} out of range (-2047 - 2047)")
         if not -2047 <= y <= 2047:
             raise RelativeMoveRangeError(f"Value of y: {y} out of range (-2047 - 2047)")
-        send_mouse_event(self.hid_file(), self.buttons_state, x, y, 0, 0)
+        send_mouse_event(self.get_hid(), self.buttons_state, x, y, 0, 0)
 
     def set_hid(self, hid: Device):
         self.hid = hid
 
-    def hid_file(self):
-        return self.hid.get_file()
+    def get_hid(self):
+        return self.hid

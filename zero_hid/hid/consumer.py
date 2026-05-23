@@ -15,7 +15,7 @@ def pack_keys(keys: List[int]) -> List[int]:
         raise ValueError("Too many consumer keys: HID supports up to 2 simultaneous key presses.")
     return keys
 
-def send_consumer_event(hid_file, keys: List[int]) -> None:
+def send_consumer_event(hid, keys: List[int]) -> None:
     if logger.getEffectiveLevel() == logging.DEBUG:
         logger.debug(f"keys:{keys}")
 
@@ -34,8 +34,8 @@ def send_consumer_event(hid_file, keys: List[int]) -> None:
         buf[i] = (key >> 8) & 0xFF  # high byte
         i += 1
 
-    hid_write.write_to_hid_interface(hid_file, buf)
+    hid_write.write_to_hid_interface(hid, buf)
 
-def send_consumer_event_identity(hid_file):
+def send_consumer_event_identity(hid):
     logger.debug("Sending identity...")
-    send_consumer_event(hid_file, None)
+    send_consumer_event(hid, None)

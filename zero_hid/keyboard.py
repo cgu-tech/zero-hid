@@ -39,7 +39,7 @@ class Keyboard:
                 logger.debug(f"{count}. {name}: {desc}")
 
     def read_state(self) -> LEDState:
-        state = read_keyboard_state(self.hid_file())
+        state = read_keyboard_state(self.get_hid())
 
         # Return identity when state cannot be read
         if state is None:
@@ -219,79 +219,79 @@ class Keyboard:
             logger.debug("Send 1st to last modifier aggregated sequentially")
             while len(mods) > 0:
                 mods_to_send.append(mods.popleft())
-                send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+                send_keyboard_event(self.get_hid(), mods_to_send, keys_to_send)
 
             logger.debug("Send all modifiers + 1st to last key aggregated sequentially")
             while len(keys) > 0:
                 keys_to_send.append(keys.popleft())
-                send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+                send_keyboard_event(self.get_hid(), mods_to_send, keys_to_send)
 
             logger.debug("Send all modifiers + last to 1st key de-aggregated sequentially")
             while len(keys_to_send) > 0:
                 keys.append(keys_to_send.pop())
-                send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+                send_keyboard_event(self.get_hid(), mods_to_send, keys_to_send)
 
             logger.debug("Send last to 1st modifier de-aggregated sequentially")
             while len(mods_to_send) > 0:
                 mods.append(mods_to_send.pop())
-                send_keyboard_event(self.hid_file(), mods_to_send, keys_to_send)
+                send_keyboard_event(self.get_hid(), mods_to_send, keys_to_send)
 
             sequence_index += 1
 
     def press(self, mods: List[int], keys: List[int], release=True):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"mods:{mods},keys:{keys},release={release}")
-        send_keyboard_event(self.hid_file(), mods, keys)
+        send_keyboard_event(self.get_hid(), mods, keys)
         if release:
             self.release()
 
     def release(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug("Releasing...")
-        send_keyboard_event_identity(self.hid_file())
+        send_keyboard_event_identity(self.get_hid())
 
     def combo_switch_app(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], [KeyCodes.KEY_TAB])
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_ALT], None)
-        send_keyboard_event(self.hid_file(), None, None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_ALT], None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_ALT], [KeyCodes.KEY_TAB])
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_ALT], None)
+        send_keyboard_event(self.get_hid(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Combo send")
 
     def combo_show_desktop(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_D])
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), None, None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_D])
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.get_hid(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Combo send")
 
     def combo_maximize_window(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_UP])
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), None, None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_UP])
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.get_hid(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Combo send")
 
     def combo_switch_display(self):
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Sending combo...")
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_P])
-        send_keyboard_event(self.hid_file(), [KeyCodes.MOD_LEFT_GUI], None)
-        send_keyboard_event(self.hid_file(), None, None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], [KeyCodes.KEY_P])
+        send_keyboard_event(self.get_hid(), [KeyCodes.MOD_LEFT_GUI], None)
+        send_keyboard_event(self.get_hid(), None, None)
         if logger.getEffectiveLevel() == logging.DEBUG:
             logger.debug(f"Combo send")
 
     def set_hid(self, hid: Device):
         self.hid = hid
 
-    def hid_file(self):
-        return self.hid.get_file()
+    def get_hid(self):
+        return self.hid

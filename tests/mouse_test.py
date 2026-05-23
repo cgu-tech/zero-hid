@@ -21,9 +21,9 @@ def create_empty_file(dev_path):
 def send_mouse_event_data(buttons, x, y, scroll_x, scroll_y):
     with temp_path() as dev_path:
         create_empty_file(dev_path)
-        with Device(dev_path) as dev:
-            hid_file = dev.get_file()
-            send_mouse_event(hid_file, buttons, x, y, scroll_x, scroll_y)
+        with Device(dev_path) as hid:
+            send_mouse_event(hid, buttons, x, y, scroll_x, scroll_y)
+            hid_file = hid.get_file_descriptor()
             hid_file.seek(0)
             data = hid_file.read()
     return data
