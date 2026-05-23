@@ -16,35 +16,83 @@ Type=oneshot
 RemainAfterExit=yes
 TimeoutSec=30
 
-# Clean teardown before rebuild
+# ---------------------------
+# Wait until UDC is unbound
+# ---------------------------
 ExecStartPre=/bin/bash -c '\
-if [ -e /sys/kernel/config/usb_gadget/g1/UDC ]; then \
-    echo "" > /sys/kernel/config/usb_gadget/g1/UDC || true; \
-fi'
+for i in $(seq 1 50); do \
+    if [ ! -s /sys/kernel/config/usb_gadget/g1/UDC ] 2>/dev/null; then \
+        break; \
+    fi; \
+    sleep 0.1; \
+done'
 
-# Wait for udev/device nodes to fully settle
+# ---------------------------
+# Ensure clean unbind
+# ---------------------------
+ExecStartPre=/bin/bash -c '\
+echo "" > /sys/kernel/config/usb_gadget/g1/UDC 2>/dev/null || true'
+
+# ---------------------------
+# Wait for UDC to actually detach
+# ---------------------------
+ExecStartPre=/bin/bash -c '\
+for i in $(seq 1 100); do \
+    if [ ! -e /sys/class/udc/*/device 2>/dev/null ]; then \
+        break; \
+    fi; \
+    sleep 0.1; \
+done || true'
+
+# ---------------------------
+# Wait for udev to finish cleanup
+# ---------------------------
 ExecStartPre=/usr/bin/udevadm settle --timeout=10
 
-# Main gadget initialization
+# ---------------------------
+# Start gadget
+# ---------------------------
 ExecStart=/usr/bin/init_usb_gadget
 
-# Graceful stop
-ExecStop=/bin/bash -c '\
-if [ -e /sys/kernel/config/usb_gadget/g1/UDC ]; then \
-    echo "" > /sys/kernel/config/usb_gadget/g1/UDC || true; \
-fi'
+# ---------------------------
+# Wait until HID device exists AND is writable
+# ---------------------------
+ExecStartPost=/bin/bash -c '\
+for i in $(seq 1 100); do \
+    if [ -e /dev/hidg0 ] && [ -w /dev/hidg0 ]; then \
+        exit 0; \
+    fi; \
+    sleep 0.1; \
+done; \
+exit 1'
 
-# Full rebuild on reload
+# ---------------------------
+# Stop gadget cleanly
+# ---------------------------
+ExecStop=/bin/bash -c '\
+echo "" > /sys/kernel/config/usb_gadget/g1/UDC 2>/dev/null || true; \
+for i in $(seq 1 100); do \
+    if [ ! -e /dev/hidg0 ]; then \
+        break; \
+    fi; \
+    sleep 0.1; \
+done'
+
+# ---------------------------
+# Reload = full deterministic rebuild
+# ---------------------------
 ExecReload=/bin/bash -c '\
-if [ -e /sys/kernel/config/usb_gadget/g1/UDC ]; then \
-    echo "" > /sys/kernel/config/usb_gadget/g1/UDC || true; \
-fi; \
-sleep 2; \
-rm -rf /sys/kernel/config/usb_gadget/g1; \
+echo "" > /sys/kernel/config/usb_gadget/g1/UDC 2>/dev/null || true; \
+for i in $(seq 1 100); do \
+    if [ ! -e /dev/hidg0 ]; then \
+        break; \
+    fi; \
+    sleep 0.1; \
+done; \
 udevadm settle --timeout=10; \
 /usr/bin/init_usb_gadget'
 
-# Recovery behavior (optional but recommended)
+# Manually restartable only
 Restart=no
 
 [Install]
