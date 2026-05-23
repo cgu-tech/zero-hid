@@ -1,10 +1,14 @@
+import errno
 import logging
 import threading
 import typing
-import errno
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 
 logger = logging.getLogger(__name__)
+USB_HID_SCRIPT_SHELL = "/bin/bash"
+USB_HID_SCRIPT_PATH = "/usr/bin/init_usb_gadget"
+USB_HID_SCRIPT_RESTART_OPTION = "--restart"
 
 class Error(Exception):
     pass
@@ -43,6 +47,11 @@ def _write_to_hid_interface_immediately(hid, buffer):
                     logger.warning(f"HID broken pipe (attempt {attempt}), reopening...")
                     hid.reopen()
                 else:
+                    # Try USB HID gadget recovery
+                    logger.warning(f"HID broken pipe last attempt reached: reseting USB HID gadget...")
+                    logger.warning(f"{USB_HID_SCRIPT_SHELL} {USB_HID_SCRIPT_PATH} {USB_HID_SCRIPT_RESTART_OPTION}")
+                    subprocess.run([USB_HID_SCRIPT_SHELL, USB_HID_SCRIPT_PATH, USB_HID_SCRIPT_RESTART_OPTION])
+                    logger.warning(f"USB HID reset")
                     raise
 
 def write_to_hid_interface(hid, buffer):
