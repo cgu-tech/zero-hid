@@ -1,14 +1,33 @@
 [Unit]
-Description=Init usb gadget (zero-hid)
-DefaultDependencies=no
-After=sysinit.target local-fs.target
-Before=basic.target
+Description=USB Gadget (Zero HID Composite)
+After=systemd-modules-load.service sysinit.target systemd-udev-settle.service
+Wants=systemd-modules-load.service systemd-udev-settle.service
+
+# IMPORTANT: allow recovery loops
+StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/init_usb_gadget
-TimeoutSec=0
 RemainAfterExit=yes
+TimeoutSec=30
+
+# HARD cleanup (more robust than your current one)
+ExecStop=/bin/bash -c '\
+G=/sys/kernel/config/usb_gadget/g1; \
+if [ -e $G/UDC ]; then echo "" > $G/UDC 2>/dev/null || true; fi; \
+sleep 1; \
+rm -rf $G 2>/dev/null || true'
+
+ExecStart=/usr/bin/init_usb_gadget
+
+# This is the KEY improvement: safe rebuild path
+ExecReload=/bin/bash -c '\
+systemctl stop usb_gadget.service; \
+sleep 1; \
+systemctl start usb_gadget.service'
+
+# Recovery behavior (optional but recommended)
+Restart=no
 
 [Install]
-WantedBy=basic.target
+WantedBy=multi-user.target

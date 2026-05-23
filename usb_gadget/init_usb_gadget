@@ -278,17 +278,34 @@ ln -s "${USB_GADGET_FUNCTION_KBM_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
 echo "Binding USB gadget function ${USB_GADGET_FUNCTION_AUDIO} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
 ln -s "${USB_GADGET_FUNCTION_AUDIO_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
 
-echo "Binding USB Device Controllers to UDC..."
+echo -n "Binding USB Device Controllers to UDC..."
 UDC_DEVICE=$(ls /sys/class/udc | head -n 1)
-echo "$UDC_DEVICE" > "${USB_GADGET_UDC}"
+for i in {1..50}; do
+    UDC_DEVICE=$(ls /sys/class/udc 2>/dev/null | head -n 1)
+    [ -n "$UDC_DEVICE" ] && break
+    sleep 0.2
+    echo -n "."
+done
+echo ""
 
-echo "Giving rights to exposed ${USB_GADGET_DEVICE} device..."
-for i in {1..10}; do
-    if [ -e "${USB_GADGET_DEVICE}" ]; then
+if [ -z "$UDC_DEVICE" ]; then
+    echo "ERROR: No UDC found"
+    exit 1
+fi
+
+echo "$UDC_DEVICE" > "${USB_GADGET_UDC}"
+echo -n "Waiting for UDC stabilization..."
+sleep 1.0
+
+echo -n "Giving rights to exposed ${USB_GADGET_DEVICE} device..."
+for i in {1..50}; do
+    if [ -e "${USB_GADGET_DEVICE}" ] && [ -w "${USB_GADGET_DEVICE}" ]; then
         chmod 777 "${USB_GADGET_DEVICE}"
         break
     fi
-    sleep 0.5
+    sleep 0.2
+    echo -n "."
 done
+echo ""
 
 echo "USB gadget sucessfully created"
