@@ -1,98 +1,29 @@
 [Unit]
 Description=USB Gadget (Zero HID Composite)
 
-# Ensure kernel modules and udev are fully operational first
+# Only ensure kernel + configfs are available
 Requires=systemd-modules-load.service systemd-udevd.service
-After=systemd-modules-load.service sysinit.target systemd-udevd.service local-fs.target
+After=systemd-modules-load.service systemd-udevd.service local-fs.target
 
-# ensures configfs is mounted before running
 ConditionPathExists=/sys/kernel/config
-
-# IMPORTANT: allow recovery loops
-StartLimitIntervalSec=0
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-TimeoutSec=30
+TimeoutSec=60
 
-# ---------------------------
-# Wait until UDC is unbound
-# ---------------------------
-ExecStartPre=/bin/bash -c '\
-for i in $(seq 1 50); do \
-    if [ ! -s /sys/kernel/config/usb_gadget/g1/UDC ] 2>/dev/null; then \
-        break; \
-    fi; \
-    sleep 0.1; \
-done'
-
-# ---------------------------
-# Ensure clean unbind
-# ---------------------------
-ExecStartPre=/bin/bash -c '\
-echo "" > /sys/kernel/config/usb_gadget/g1/UDC 2>/dev/null || true'
-
-# ---------------------------
-# Wait for UDC to actually detach
-# ---------------------------
-ExecStartPre=/bin/bash -c '\
-for i in $(seq 1 100); do \
-    if [ ! -e /sys/class/udc/*/device 2>/dev/null ]; then \
-        break; \
-    fi; \
-    sleep 0.1; \
-done || true'
-
-# ---------------------------
-# Wait for udev to finish cleanup
-# ---------------------------
+# ONLY synchronization barrier (no teardown logic here)
 ExecStartPre=/usr/bin/udevadm settle --timeout=10
 
-# ---------------------------
-# Start gadget
-# ---------------------------
+# Full lifecycle delegated to script
 ExecStart=/usr/bin/init_usb_gadget
 
-# ---------------------------
-# Wait until HID device exists AND is writable
-# ---------------------------
-ExecStartPost=/bin/bash -c '\
-for i in $(seq 1 100); do \
-    if [ -e /dev/hidg0 ] && [ -w /dev/hidg0 ]; then \
-        exit 0; \
-    fi; \
-    sleep 0.1; \
-done; \
-exit 1'
+# Let script handle cleanup
+ExecStop=/usr/bin/init_usb_gadget --stop
 
-# ---------------------------
-# Stop gadget cleanly
-# ---------------------------
-ExecStop=/bin/bash -c '\
-echo "" > /sys/kernel/config/usb_gadget/g1/UDC 2>/dev/null || true; \
-for i in $(seq 1 100); do \
-    if [ ! -e /dev/hidg0 ]; then \
-        break; \
-    fi; \
-    sleep 0.1; \
-done'
+# Optional reload = full restart of gadget (script owns logic)
+ExecReload=/usr/bin/init_usb_gadget --restart
 
-# ---------------------------
-# Reload = full deterministic rebuild
-# ---------------------------
-ExecReload=/bin/bash -c '\
-echo "" > /sys/kernel/config/usb_gadget/g1/UDC 2>/dev/null || true; \
-for i in $(seq 1 100); do \
-    if [ ! -e /dev/hidg0 ]; then \
-        break; \
-    fi; \
-    sleep 0.1; \
-done; \
-udevadm settle --timeout=10; \
-/usr/bin/init_usb_gadget'
-
-# Manually restartable only
 Restart=no
 
 [Install]
