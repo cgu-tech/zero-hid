@@ -11,7 +11,7 @@ Type=oneshot
 RemainAfterExit=yes
 TimeoutSec=30
 
-# HARD cleanup (more robust than your current one)
+# HARD cleanup
 ExecStop=/bin/bash -c '\
 G=/sys/kernel/config/usb_gadget/g1; \
 if [ -e $G/UDC ]; then echo "" > $G/UDC 2>/dev/null || true; fi; \
@@ -20,7 +20,7 @@ rm -rf $G 2>/dev/null || true'
 
 ExecStart=/usr/bin/init_usb_gadget
 
-# This is the KEY improvement: safe rebuild path
+# Safe rebuild path
 ExecReload=/bin/bash -c '\
 systemctl stop usb_gadget.service; \
 sleep 1; \
