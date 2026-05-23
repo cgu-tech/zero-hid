@@ -294,8 +294,10 @@ if [ -z "$UDC_DEVICE" ]; then
 fi
 
 echo "$UDC_DEVICE" > "${USB_GADGET_UDC}"
-echo -n "Waiting for UDC stabilization..."
-sleep 1.0
+
+echo "Waiting for udev to process HID gadget devices..."
+udevadm trigger --action=add || true
+udevadm settle --timeout=10 || true
 
 echo -n "Giving rights to exposed ${USB_GADGET_DEVICE} device..."
 for i in {1..50}; do
@@ -307,5 +309,10 @@ for i in {1..50}; do
     echo -n "."
 done
 echo ""
+
+if [ ! -e "${USB_GADGET_DEVICE}" ]; then
+    echo "ERROR: HID gadget device ${USB_GADGET_DEVICE} was not created"
+    exit 1
+fi
 
 echo "USB gadget sucessfully created"

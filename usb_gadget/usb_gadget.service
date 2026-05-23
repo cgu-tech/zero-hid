@@ -1,7 +1,12 @@
 [Unit]
 Description=USB Gadget (Zero HID Composite)
-After=systemd-modules-load.service sysinit.target systemd-udev-settle.service
-Wants=systemd-modules-load.service systemd-udev-settle.service
+
+# Ensure kernel modules and udev are fully operational first
+Requires=systemd-modules-load.service systemd-udevd.service
+After=systemd-modules-load.service sysinit.target systemd-udevd.service local-fs.target
+
+# ensures configfs is mounted before running
+ConditionPathExists=/sys/kernel/config
 
 # IMPORTANT: allow recovery loops
 StartLimitIntervalSec=0
@@ -11,20 +16,33 @@ Type=oneshot
 RemainAfterExit=yes
 TimeoutSec=30
 
-# HARD cleanup
-ExecStop=/bin/bash -c '\
-G=/sys/kernel/config/usb_gadget/g1; \
-if [ -e $G/UDC ]; then echo "" > $G/UDC 2>/dev/null || true; fi; \
-sleep 1; \
-rm -rf $G 2>/dev/null || true'
+# Clean teardown before rebuild
+ExecStartPre=/bin/bash -c '\
+if [ -e /sys/kernel/config/usb_gadget/g1/UDC ]; then \
+    echo "" > /sys/kernel/config/usb_gadget/g1/UDC || true; \
+fi'
 
+# Wait for udev/device nodes to fully settle
+ExecStartPre=/usr/bin/udevadm settle --timeout=10
+
+# Main gadget initialization
 ExecStart=/usr/bin/init_usb_gadget
 
-# Safe rebuild path
+# Graceful stop
+ExecStop=/bin/bash -c '\
+if [ -e /sys/kernel/config/usb_gadget/g1/UDC ]; then \
+    echo "" > /sys/kernel/config/usb_gadget/g1/UDC || true; \
+fi'
+
+# Full rebuild on reload
 ExecReload=/bin/bash -c '\
-systemctl stop usb_gadget.service; \
-sleep 1; \
-systemctl start usb_gadget.service'
+if [ -e /sys/kernel/config/usb_gadget/g1/UDC ]; then \
+    echo "" > /sys/kernel/config/usb_gadget/g1/UDC || true; \
+fi; \
+sleep 2; \
+rm -rf /sys/kernel/config/usb_gadget/g1; \
+udevadm settle --timeout=10; \
+/usr/bin/init_usb_gadget'
 
 # Recovery behavior (optional but recommended)
 Restart=no
