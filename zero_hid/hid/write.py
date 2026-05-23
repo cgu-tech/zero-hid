@@ -39,7 +39,7 @@ def write_to_hid_interface(hid_file, buffer):
         raise WriteError(
             f"Timed out writing to HID interface: {hid_file}. Is USB cable connected and Gadget module installed? check https://git.io/J1T7Q"
         )
-    except Exception as e:
+    except Exception as ex:
         raise WriteError(
-            f"Failed to write to HID interface: {hid_file}. Reason: {e}"
-        ) from e
+            f"Failed to write to HID interface: {hid_file}. Reason: {ex}"
+        ) from ex

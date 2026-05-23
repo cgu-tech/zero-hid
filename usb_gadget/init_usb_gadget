@@ -11,284 +11,372 @@ set -x
 # Treat undefined environment variables as errors.
 set -u
 
-modprobe libcomposite
-
 # https://eleccelerator.com/tutorial-about-usb-hid-report-descriptors/
 
 echo "Creating USB gadget..."
 USB_GADGET_DIR=/sys/kernel/config/usb_gadget/g1
 USB_GADGET_UDC="${USB_GADGET_DIR}/UDC"
 USB_GADGET_DEVICE=/dev/hidg0
+UDC_DIR=/sys/class/udc
 
-# Clean up any existing gadget
-if [ -d "${USB_GADGET_DIR}" ]; then
-    echo "Removing existing UDC from USB gadget ${USB_GADGET_UDC}..."
-    echo "" > "${USB_GADGET_UDC}" || true
+stop_gadget() {
+  echo "Stopping USB gadget..."
 
-    echo "Deleting existing USB gadget directory ${USB_GADGET_DIR}..."
-    rm -rf "${USB_GADGET_DIR}"
-fi
+  # 1. Unbind UDC safely
+  echo "Removing existing UDC from USB gadget ${USB_GADGET_UDC}..."
+  if [ -f "${USB_GADGET_UDC}" ]; then
+    echo "" > "${USB_GADGET_UDC}" 2>/dev/null || true
+  fi
 
-echo "Creating USB gadget directory ${USB_GADGET_DIR}..."
-mkdir -p "${USB_GADGET_DIR}"
+  sync
+  udevadm settle --timeout=10 || true
 
-echo "Configuring USB gadget metadata (idVendor, idProduct, bcdDevice, bcdUSB)..."
-echo 0x1d6b > "${USB_GADGET_DIR}/idVendor"  # Linux Foundation
-echo 0x0104 > "${USB_GADGET_DIR}/idProduct" # Multifunction Composite Gadget
-echo 0x0100 > "${USB_GADGET_DIR}/bcdDevice" # v1.0.0
-echo 0x0200 > "${USB_GADGET_DIR}/bcdUSB"    # USB2
-
-USB_GADGET_STRINGS_DIR="${USB_GADGET_DIR}/strings/0x409"
-echo "Creating USB gadget strings directory ${USB_GADGET_STRINGS_DIR}..."
-mkdir -p "${USB_GADGET_STRINGS_DIR}"
-
-echo "Configuring USB gadget strings (serialnumber, manufacturer, product)..."
-echo "6b65796d696d6570690"      > "${USB_GADGET_STRINGS_DIR}/serialnumber"
-echo "tinypilot"                > "${USB_GADGET_STRINGS_DIR}/manufacturer"
-echo "Multifunction USB Device" > "${USB_GADGET_STRINGS_DIR}/product"
-
-USB_GADGET_FUNCTIONS_DIR="${USB_GADGET_DIR}/functions"
-echo "Creating USB gadget functions directory ${USB_GADGET_FUNCTIONS_DIR}..."
-mkdir -p "${USB_GADGET_FUNCTIONS_DIR}"
-
-USB_GADGET_FUNCTION_KBM="hid.kbm"
-USB_GADGET_FUNCTION_KBM_DIR="${USB_GADGET_FUNCTIONS_DIR}/${USB_GADGET_FUNCTION_KBM}"
-echo "Creating USB gadget function ${USB_GADGET_FUNCTION_KBM} directory ${USB_GADGET_FUNCTION_KBM_DIR}..."
-mkdir -p "${USB_GADGET_FUNCTION_KBM_DIR}"
-
-echo "Configuring USB gadget function ${USB_GADGET_FUNCTION_KBM} report (protocol, subclass, report_length, report_desc)..."
-echo 1 > "${USB_GADGET_FUNCTION_KBM_DIR}/protocol" # Keyboard
-echo 1 > "${USB_GADGET_FUNCTION_KBM_DIR}/subclass" # Boot interface subclass
-echo 64 > "${USB_GADGET_FUNCTION_KBM_DIR}/report_length"
-# Write the report descriptor
-D=$(mktemp)
-{
-  # Keyboard start
-  echo -ne \\x05\\x01                   # Usage Page (Generic Desktop)        0
-  echo -ne \\x09\\x06                   # Usage (Keyboard)                    2
-  echo -ne \\xa1\\x01                   # Collection (Application)            4
-  # Keyboard report ID (1)
-  echo -ne \\x85\\x01                   #  Report ID (1)                      6
-  echo -ne \\x95\\x08                   #  Report Count (8)                   8
-  echo -ne \\x75\\x01                   #  Report Size (1)                    10
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                12
-  echo -ne \\x25\\x01                   #  Logical Maximum (1)                14
-  echo -ne \\x05\\x07                   #  Usage Page (Keyboard)              16
-  echo -ne \\x19\\xe0                   #  Usage Minimum (224)                18
-  echo -ne \\x29\\xe7                   #  Usage Maximum (231)                20
-  echo -ne \\x81\\x02                   #  Input (Data,Var,Abs)               22
-  echo -ne \\x95\\x06                   #  Report Count (6)                   24
-  echo -ne \\x75\\x08                   #  Report Size (8)                    26
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                28
-  echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              30
-  echo -ne \\x05\\x07                   #  Usage Page (Keyboard)              33
-  echo -ne \\x19\\x00                   #  Usage Minimum (0)                  35
-  echo -ne \\x2a\\xff\\x00              #  Usage Maximum (255)                37
-  echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               40
-  # Keyboard LEDs report ID (14)
-  echo -ne \\x85\\x0e                   #  Report ID (14)                     42
-  echo -ne \\x05\\x08                   #  Usage Page (LEDs)                  44
-  echo -ne \\x95\\x05                   #  Report Count (5)                   46
-  echo -ne \\x75\\x01                   #  Report Size (1)                    48
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                50
-  echo -ne \\x25\\x01                   #  Logical Maximum (1)                52
-  echo -ne \\x19\\x01                   #  Usage Minimum (1)                  54
-  echo -ne \\x29\\x05                   #  Usage Maximum (5)                  56
-  echo -ne \\x91\\x02                   #  Output (Data,Var,Abs)              58
-  echo -ne \\x95\\x01                   #  Report Count (1)                   60
-  echo -ne \\x75\\x03                   #  Report Size (3)                    62
-  echo -ne \\x91\\x01                   #  Output (Cnst,Arr,Abs)              64
-  # Keyboard end
-  echo -ne \\xc0                        # End Collection                      66
-
-  # Mouse start
-  echo -ne \\x05\\x01                   # Usage Page (Generic Desktop)        67
-  echo -ne \\x09\\x02                   # Usage (Mouse)                       69
-  echo -ne \\xa1\\x01                   # Collection (Application)            71
-  # Mouse report ID (2)
-  echo -ne \\x85\\x02                   #  Report ID (2)                      73
-  echo -ne \\x09\\x01                   #  Usage (Pointer)                    75
-  echo -ne \\xa1\\x00                   #  Collection (Physical)              77
-  echo -ne \\x05\\x09                   #   Usage Page (Button)               79
-  echo -ne \\x19\\x01                   #   Usage Minimum (1)                 81
-  echo -ne \\x29\\x10                   #   Usage Maximum (16)                83
-  echo -ne \\x15\\x00                   #   Logical Minimum (0)               85
-  echo -ne \\x25\\x01                   #   Logical Maximum (1)               87
-  echo -ne \\x95\\x10                   #   Report Count (16)                 89
-  echo -ne \\x75\\x01                   #   Report Size (1)                   91
-  echo -ne \\x81\\x02                   #   Input (Data,Var,Abs)              93
-  echo -ne \\x05\\x01                   #   Usage Page (Generic Desktop)      95
-  echo -ne \\x16\\x01\\xf8              #   Logical Minimum (-2047)           97
-  echo -ne \\x26\\xff\\x07              #   Logical Maximum (2047)            100
-  echo -ne \\x75\\x0c                   #   Report Size (12)                  103
-  echo -ne \\x95\\x02                   #   Report Count (2)                  105
-  echo -ne \\x09\\x30                   #   Usage (X)                         107
-  echo -ne \\x09\\x31                   #   Usage (Y)                         109
-  echo -ne \\x81\\x06                   #   Input (Data,Var,Rel)              111
-  echo -ne \\x15\\x81                   #   Logical Minimum (-127)            113
-  echo -ne \\x25\\x7f                   #   Logical Maximum (127)             115
-  echo -ne \\x75\\x08                   #   Report Size (8)                   117
-  echo -ne \\x95\\x01                   #   Report Count (1)                  119
-  echo -ne \\x09\\x38                   #   Usage (Wheel)                     121
-  echo -ne \\x81\\x06                   #   Input (Data,Var,Rel)              123
-  echo -ne \\x05\\x0c                   #   Usage Page (Consumer Devices)     125
-  echo -ne \\x0a\\x38\\x02              #   Usage (AC Pan)                    127
-  echo -ne \\x95\\x01                   #   Report Count (1)                  130
-  echo -ne \\x81\\x06                   #   Input (Data,Var,Rel)              132
-  echo -ne \\xc0                        #  End Collection                     134
-  # Mouse end
-  echo -ne \\xc0                        # End Collection                      135
-
-  # Consumer Control start
-  echo -ne \\x05\\x0c                   # Usage Page (Consumer Devices)       136
-  echo -ne \\x09\\x01                   # Usage (Consumer Control)            138
-  echo -ne \\xa1\\x01                   # Collection (Application)            140
-  # Consumer Control report ID (3)
-  echo -ne \\x85\\x03                   #  Report ID (3)                      142
-  echo -ne \\x75\\x10                   #  Report Size (16)                   144
-  echo -ne \\x95\\x02                   #  Report Count (2)                   146
-  echo -ne \\x15\\x01                   #  Logical Minimum (1)                148
-  echo -ne \\x26\\xff\\x02              #  Logical Maximum (767)              150
-  echo -ne \\x19\\x01                   #  Usage Minimum (1)                  153
-  echo -ne \\x2a\\xff\\x02              #  Usage Maximum (767)                155
-  echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               158
-  # Consumer Control end
-  echo -ne \\xc0                        # End Collection                      160
-
-  # System Control start
-  echo -ne \\x05\\x01                   # Usage Page (Generic Desktop)        161
-  echo -ne \\x09\\x80                   # Usage (System Control)              163
-  echo -ne \\xa1\\x01                   # Collection (Application)            165
-  # System Control report ID (4)
-  echo -ne \\x85\\x04                   #  Report ID (4)                      167
-  echo -ne \\x75\\x02                   #  Report Size (2)                    169
-  echo -ne \\x95\\x01                   #  Report Count (1)                   171
-  echo -ne \\x15\\x01                   #  Logical Minimum (1)                173
-  echo -ne \\x25\\x03                   #  Logical Maximum (3)                175
-  echo -ne \\x09\\x82                   #  Usage (System Sleep)               177
-  echo -ne \\x09\\x81                   #  Usage (System Power Down)          179
-  echo -ne \\x09\\x83                   #  Usage (System Wake Up)             181
-  echo -ne \\x81\\x60                   #  Input (Data,Arr,Abs,NoPref,Null)   183
-  echo -ne \\x75\\x06                   #  Report Size (6)                    185
-  echo -ne \\x81\\x03                   #  Input (Cnst,Var,Abs)               187
-  # System Control end
-  echo -ne \\xc0                        # End Collection                      189
-
-  # Vendor Usage 1 start
-  echo -ne \\x06\\x00\\xff              # Usage Page (Vendor Defined Page 1)  190
-  echo -ne \\x09\\x01                   # Usage (Vendor Usage 1)              193
-  echo -ne \\xa1\\x01                   # Collection (Application)            195
-  # Vendor Usage 1 report ID (16)
-  echo -ne \\x85\\x10                   #  Report ID (16)                     197
-  echo -ne \\x75\\x08                   #  Report Size (8)                    199
-  echo -ne \\x95\\x06                   #  Report Count (6)                   201
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                203
-  echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              205
-  echo -ne \\x09\\x01                   #  Usage (Vendor Usage 1)             208
-  echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               210
-  echo -ne \\x09\\x01                   #  Usage (Vendor Usage 1)             212
-  echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              214
-  # Vendor Usage 1 end
-  echo -ne \\xc0                        # End Collection                      216
-
-  # Vendor Usage 2 start
-  echo -ne \\x06\\x00\\xff              # Usage Page (Vendor Defined Page 1)  217
-  echo -ne \\x09\\x02                   # Usage (Vendor Usage 2)              220
-  echo -ne \\xa1\\x01                   # Collection (Application)            222
-  # Vendor Usage 2 report ID (17)
-  echo -ne \\x85\\x11                   #  Report ID (17)                     224
-  echo -ne \\x75\\x08                   #  Report Size (8)                    226
-  echo -ne \\x95\\x13                   #  Report Count (19)                  228
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                230
-  echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              232
-  echo -ne \\x09\\x02                   #  Usage (Vendor Usage 2)             235
-  echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               237
-  echo -ne \\x09\\x02                   #  Usage (Vendor Usage 2)             239
-  echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              241
-  # Vendor Usage 2 end
-  echo -ne \\xc0                        # End Collection                      243
-
-  # Vendor Usage 0x04 start
-  echo -ne \\x06\\x00\\xff              # Usage Page (Vendor Defined Page 1)  244
-  echo -ne \\x09\\x04                   # Usage (Vendor Usage 0x04)           247
-  echo -ne \\xa1\\x01                   # Collection (Application)            249
-  # Vendor Usage 0x04 report ID (32)
-  echo -ne \\x85\\x20                   #  Report ID (32)                     251
-  echo -ne \\x75\\x08                   #  Report Size (8)                    253
-  echo -ne \\x95\\x0e                   #  Report Count (14)                  255
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                257
-  echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              259
-  echo -ne \\x09\\x41                   #  Usage (Vendor Usage 0x41)          262
-  echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               264
-  echo -ne \\x09\\x41                   #  Usage (Vendor Usage 0x41)          266
-  echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              268
-  # Vendor Usage 0x04 report ID (33)
-  echo -ne \\x85\\x21                   #  Report ID (33)                     270
-  echo -ne \\x95\\x1f                   #  Report Count (31)                  272
-  echo -ne \\x15\\x00                   #  Logical Minimum (0)                274
-  echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              276
-  echo -ne \\x09\\x42                   #  Usage (Vendor Usage 0x42)          279
-  echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               281
-  echo -ne \\x09\\x42                   #  Usage (Vendor Usage 0x42)          283
-  echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              285
-  # Vendor Usage 0x04 end
-  echo -ne \\xc0                        # End Collection                      287
-} >> "$D"
-cp "$D" "${USB_GADGET_FUNCTION_KBM_DIR}/report_desc"
-rm -f "$D"
-
-# Microphone function
-USB_GADGET_FUNCTION_AUDIO="uac1.usb0"
-USB_GADGET_FUNCTION_AUDIO_DIR="${USB_GADGET_FUNCTIONS_DIR}/${USB_GADGET_FUNCTION_AUDIO}"
-mkdir -p "${USB_GADGET_FUNCTION_AUDIO_DIR}"
-
-# Basic parameters for microphone
-echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_chmask"   # 1 channel (mono)
-echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_srate" # 16kHz sample rate
-echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_ssize"     # 2 bytes per sample (16-bit sample size)
-
-echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_chmask"   # 1 channel (mono)
-echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_srate" # 16kHz sample rate
-echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_ssize"     # 2 bytes per sample (16-bit sample size)
-
-USB_GADGET_CONFIGS_DIR="${USB_GADGET_DIR}/configs"
-echo "Creating USB gadget configs directory ${USB_GADGET_CONFIGS_DIR}..."
-mkdir -p "${USB_GADGET_CONFIGS_DIR}"
-
-USB_GADGET_CONFIG_INDEX_FIRST=1
-USB_GADGET_CONFIG_DIR_FIRST="${USB_GADGET_CONFIGS_DIR}/c.${USB_GADGET_CONFIG_INDEX_FIRST}"
-echo "Creating USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} directory ${USB_GADGET_CONFIG_DIR_FIRST}..."
-mkdir -p "${USB_GADGET_CONFIG_DIR_FIRST}"
-
-# declares how much power the config needs (e.g. 250 mA)
-echo "Configuring USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} (MaxPower)..."
-echo 250 > "${USB_GADGET_CONFIG_DIR_FIRST}/MaxPower"
-
-USB_GADGET_CONFIG_STRINGS_DIR_FIRST="${USB_GADGET_CONFIG_DIR_FIRST}/strings/0x409"
-echo "Creating USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} strings directory ${USB_GADGET_CONFIG_STRINGS_DIR_FIRST}..."
-mkdir -p "${USB_GADGET_CONFIG_STRINGS_DIR_FIRST}"
-
-# declares human-readable name for this configuration
-echo "Configuring USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} strings (configuration)..."
-echo "Config ${USB_GADGET_CONFIG_INDEX_FIRST}: HID gadget" > "${USB_GADGET_CONFIG_STRINGS_DIR_FIRST}/configuration"
-
-echo "Binding USB gadget function ${USB_GADGET_FUNCTION_KBM} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
-ln -s "${USB_GADGET_FUNCTION_KBM_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
-
-echo "Binding USB gadget function ${USB_GADGET_FUNCTION_AUDIO} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
-ln -s "${USB_GADGET_FUNCTION_AUDIO_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
-
-echo "Binding USB Device Controllers to UDC..."
-UDC_DEVICE=$(ls /sys/class/udc | head -n 1)
-echo "$UDC_DEVICE" > "${USB_GADGET_UDC}"
-
-echo "Giving rights to exposed ${USB_GADGET_DEVICE} device..."
-for i in {1..10}; do
-    if [ -e "${USB_GADGET_DEVICE}" ]; then
-        chmod 777 "${USB_GADGET_DEVICE}"
-        break
+  # 2. Wait until unbound (IMPORTANT)
+  echo "Waiting for USB device ${USB_GADGET_UDC} unbinding..."
+  for i in {1..100}; do
+    udc_state="$(cat "${USB_GADGET_UDC}" 2>/dev/null || true)"
+    if [ -z "${udc_state}" ]; then
+      break
     fi
-    sleep 0.5
-done
+    sleep 0.1
+  done
 
-echo "USB gadget sucessfully created"
+  UDC_NAME="$(basename "$(ls ${UDC_DIR} 2>/dev/null | head -n 1 || true)")"
+  if [ -n "${UDC_NAME}" ]; then
+    for i in {1..100}; do
+      # Check if gadget is still attached to UDC
+      if [ ! -e "${UDC_DIR}/${UDC_NAME}/device/gadget" ]; then
+        break
+      fi
+      sleep 0.1
+    done
+  fi
+
+  # 3. Remove gadget safely bottom-up
+  echo "Deleting existing USB gadget directory ${USB_GADGET_DIR}..."
+  if [ -d "${USB_GADGET_DIR}" ]; then
+
+    # remove function links first
+    find "${USB_GADGET_DIR}/configs" -type l -delete 2>/dev/null || true
+
+    # unbind functions manually if needed
+    for f in "${USB_GADGET_DIR}/functions"/*; do
+      [ -e "$f" ] || continue
+      rmdir "$f" 2>/dev/null || true
+    done
+
+    # remove function links safely
+    rm -rf "${USB_GADGET_DIR}/configs" 2>/dev/null || true
+    rm -rf "${USB_GADGET_DIR}/functions" 2>/dev/null || true
+    rm -rf "${USB_GADGET_DIR}/strings" 2>/dev/null || true
+
+    rmdir "${USB_GADGET_DIR}" 2>/dev/null || true
+
+    #rm -rf "${USB_GADGET_DIR}" || true # Debug only (will print usefull error traces when not working)
+  fi
+}
+
+start_gadget() {
+  echo "Starting USB gadget..."
+
+  modprobe libcomposite || true
+
+  echo "Creating USB gadget directory ${USB_GADGET_DIR}..."
+  mkdir -p "${USB_GADGET_DIR}"
+
+  echo "Configuring USB gadget metadata (idVendor, idProduct, bcdDevice, bcdUSB)..."
+  echo 0x1d6b > "${USB_GADGET_DIR}/idVendor"  # Linux Foundation
+  echo 0x0104 > "${USB_GADGET_DIR}/idProduct" # Multifunction Composite Gadget
+  echo 0x0100 > "${USB_GADGET_DIR}/bcdDevice" # v1.0.0
+  echo 0x0200 > "${USB_GADGET_DIR}/bcdUSB"    # USB2
+
+  USB_GADGET_STRINGS_DIR="${USB_GADGET_DIR}/strings/0x409"
+  echo "Creating USB gadget strings directory ${USB_GADGET_STRINGS_DIR}..."
+  mkdir -p "${USB_GADGET_STRINGS_DIR}"
+
+  echo "Configuring USB gadget strings (serialnumber, manufacturer, product)..."
+  echo "6b65796d696d6570690"      > "${USB_GADGET_STRINGS_DIR}/serialnumber"
+  echo "tinypilot"                > "${USB_GADGET_STRINGS_DIR}/manufacturer"
+  echo "Multifunction USB Device" > "${USB_GADGET_STRINGS_DIR}/product"
+
+  USB_GADGET_FUNCTIONS_DIR="${USB_GADGET_DIR}/functions"
+  echo "Creating USB gadget functions directory ${USB_GADGET_FUNCTIONS_DIR}..."
+  mkdir -p "${USB_GADGET_FUNCTIONS_DIR}"
+
+  USB_GADGET_FUNCTION_KBM="hid.kbm"
+  USB_GADGET_FUNCTION_KBM_DIR="${USB_GADGET_FUNCTIONS_DIR}/${USB_GADGET_FUNCTION_KBM}"
+  echo "Creating USB gadget function ${USB_GADGET_FUNCTION_KBM} directory ${USB_GADGET_FUNCTION_KBM_DIR}..."
+  mkdir -p "${USB_GADGET_FUNCTION_KBM_DIR}"
+
+  echo "Configuring USB gadget function ${USB_GADGET_FUNCTION_KBM} report (protocol, subclass, report_length, report_desc)..."
+  echo 1 > "${USB_GADGET_FUNCTION_KBM_DIR}/protocol" # Keyboard
+  echo 1 > "${USB_GADGET_FUNCTION_KBM_DIR}/subclass" # Boot interface subclass
+  echo 64 > "${USB_GADGET_FUNCTION_KBM_DIR}/report_length"
+  # Write the report descriptor
+  tmp_report_desc=$(mktemp)
+  {
+    # Keyboard start
+    echo -ne \\x05\\x01                   # Usage Page (Generic Desktop)        0
+    echo -ne \\x09\\x06                   # Usage (Keyboard)                    2
+    echo -ne \\xa1\\x01                   # Collection (Application)            4
+    # Keyboard report ID (1)
+    echo -ne \\x85\\x01                   #  Report ID (1)                      6
+    echo -ne \\x95\\x08                   #  Report Count (8)                   8
+    echo -ne \\x75\\x01                   #  Report Size (1)                    10
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                12
+    echo -ne \\x25\\x01                   #  Logical Maximum (1)                14
+    echo -ne \\x05\\x07                   #  Usage Page (Keyboard)              16
+    echo -ne \\x19\\xe0                   #  Usage Minimum (224)                18
+    echo -ne \\x29\\xe7                   #  Usage Maximum (231)                20
+    echo -ne \\x81\\x02                   #  Input (Data,Var,Abs)               22
+    echo -ne \\x95\\x06                   #  Report Count (6)                   24
+    echo -ne \\x75\\x08                   #  Report Size (8)                    26
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                28
+    echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              30
+    echo -ne \\x05\\x07                   #  Usage Page (Keyboard)              33
+    echo -ne \\x19\\x00                   #  Usage Minimum (0)                  35
+    echo -ne \\x2a\\xff\\x00              #  Usage Maximum (255)                37
+    echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               40
+    # Keyboard LEDs report ID (14)
+    echo -ne \\x85\\x0e                   #  Report ID (14)                     42
+    echo -ne \\x05\\x08                   #  Usage Page (LEDs)                  44
+    echo -ne \\x95\\x05                   #  Report Count (5)                   46
+    echo -ne \\x75\\x01                   #  Report Size (1)                    48
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                50
+    echo -ne \\x25\\x01                   #  Logical Maximum (1)                52
+    echo -ne \\x19\\x01                   #  Usage Minimum (1)                  54
+    echo -ne \\x29\\x05                   #  Usage Maximum (5)                  56
+    echo -ne \\x91\\x02                   #  Output (Data,Var,Abs)              58
+    echo -ne \\x95\\x01                   #  Report Count (1)                   60
+    echo -ne \\x75\\x03                   #  Report Size (3)                    62
+    echo -ne \\x91\\x01                   #  Output (Cnst,Arr,Abs)              64
+    # Keyboard end
+    echo -ne \\xc0                        # End Collection                      66
+  
+    # Mouse start
+    echo -ne \\x05\\x01                   # Usage Page (Generic Desktop)        67
+    echo -ne \\x09\\x02                   # Usage (Mouse)                       69
+    echo -ne \\xa1\\x01                   # Collection (Application)            71
+    # Mouse report ID (2)
+    echo -ne \\x85\\x02                   #  Report ID (2)                      73
+    echo -ne \\x09\\x01                   #  Usage (Pointer)                    75
+    echo -ne \\xa1\\x00                   #  Collection (Physical)              77
+    echo -ne \\x05\\x09                   #   Usage Page (Button)               79
+    echo -ne \\x19\\x01                   #   Usage Minimum (1)                 81
+    echo -ne \\x29\\x10                   #   Usage Maximum (16)                83
+    echo -ne \\x15\\x00                   #   Logical Minimum (0)               85
+    echo -ne \\x25\\x01                   #   Logical Maximum (1)               87
+    echo -ne \\x95\\x10                   #   Report Count (16)                 89
+    echo -ne \\x75\\x01                   #   Report Size (1)                   91
+    echo -ne \\x81\\x02                   #   Input (Data,Var,Abs)              93
+    echo -ne \\x05\\x01                   #   Usage Page (Generic Desktop)      95
+    echo -ne \\x16\\x01\\xf8              #   Logical Minimum (-2047)           97
+    echo -ne \\x26\\xff\\x07              #   Logical Maximum (2047)            100
+    echo -ne \\x75\\x0c                   #   Report Size (12)                  103
+    echo -ne \\x95\\x02                   #   Report Count (2)                  105
+    echo -ne \\x09\\x30                   #   Usage (X)                         107
+    echo -ne \\x09\\x31                   #   Usage (Y)                         109
+    echo -ne \\x81\\x06                   #   Input (Data,Var,Rel)              111
+    echo -ne \\x15\\x81                   #   Logical Minimum (-127)            113
+    echo -ne \\x25\\x7f                   #   Logical Maximum (127)             115
+    echo -ne \\x75\\x08                   #   Report Size (8)                   117
+    echo -ne \\x95\\x01                   #   Report Count (1)                  119
+    echo -ne \\x09\\x38                   #   Usage (Wheel)                     121
+    echo -ne \\x81\\x06                   #   Input (Data,Var,Rel)              123
+    echo -ne \\x05\\x0c                   #   Usage Page (Consumer Devices)     125
+    echo -ne \\x0a\\x38\\x02              #   Usage (AC Pan)                    127
+    echo -ne \\x95\\x01                   #   Report Count (1)                  130
+    echo -ne \\x81\\x06                   #   Input (Data,Var,Rel)              132
+    echo -ne \\xc0                        #  End Collection                     134
+    # Mouse end
+    echo -ne \\xc0                        # End Collection                      135
+  
+    # Consumer Control start
+    echo -ne \\x05\\x0c                   # Usage Page (Consumer Devices)       136
+    echo -ne \\x09\\x01                   # Usage (Consumer Control)            138
+    echo -ne \\xa1\\x01                   # Collection (Application)            140
+    # Consumer Control report ID (3)
+    echo -ne \\x85\\x03                   #  Report ID (3)                      142
+    echo -ne \\x75\\x10                   #  Report Size (16)                   144
+    echo -ne \\x95\\x02                   #  Report Count (2)                   146
+    echo -ne \\x15\\x01                   #  Logical Minimum (1)                148
+    echo -ne \\x26\\xff\\x02              #  Logical Maximum (767)              150
+    echo -ne \\x19\\x01                   #  Usage Minimum (1)                  153
+    echo -ne \\x2a\\xff\\x02              #  Usage Maximum (767)                155
+    echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               158
+    # Consumer Control end
+    echo -ne \\xc0                        # End Collection                      160
+  
+    # System Control start
+    echo -ne \\x05\\x01                   # Usage Page (Generic Desktop)        161
+    echo -ne \\x09\\x80                   # Usage (System Control)              163
+    echo -ne \\xa1\\x01                   # Collection (Application)            165
+    # System Control report ID (4)
+    echo -ne \\x85\\x04                   #  Report ID (4)                      167
+    echo -ne \\x75\\x02                   #  Report Size (2)                    169
+    echo -ne \\x95\\x01                   #  Report Count (1)                   171
+    echo -ne \\x15\\x01                   #  Logical Minimum (1)                173
+    echo -ne \\x25\\x03                   #  Logical Maximum (3)                175
+    echo -ne \\x09\\x82                   #  Usage (System Sleep)               177
+    echo -ne \\x09\\x81                   #  Usage (System Power Down)          179
+    echo -ne \\x09\\x83                   #  Usage (System Wake Up)             181
+    echo -ne \\x81\\x60                   #  Input (Data,Arr,Abs,NoPref,Null)   183
+    echo -ne \\x75\\x06                   #  Report Size (6)                    185
+    echo -ne \\x81\\x03                   #  Input (Cnst,Var,Abs)               187
+    # System Control end
+    echo -ne \\xc0                        # End Collection                      189
+  
+    # Vendor Usage 1 start
+    echo -ne \\x06\\x00\\xff              # Usage Page (Vendor Defined Page 1)  190
+    echo -ne \\x09\\x01                   # Usage (Vendor Usage 1)              193
+    echo -ne \\xa1\\x01                   # Collection (Application)            195
+    # Vendor Usage 1 report ID (16)
+    echo -ne \\x85\\x10                   #  Report ID (16)                     197
+    echo -ne \\x75\\x08                   #  Report Size (8)                    199
+    echo -ne \\x95\\x06                   #  Report Count (6)                   201
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                203
+    echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              205
+    echo -ne \\x09\\x01                   #  Usage (Vendor Usage 1)             208
+    echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               210
+    echo -ne \\x09\\x01                   #  Usage (Vendor Usage 1)             212
+    echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              214
+    # Vendor Usage 1 end
+    echo -ne \\xc0                        # End Collection                      216
+  
+    # Vendor Usage 2 start
+    echo -ne \\x06\\x00\\xff              # Usage Page (Vendor Defined Page 1)  217
+    echo -ne \\x09\\x02                   # Usage (Vendor Usage 2)              220
+    echo -ne \\xa1\\x01                   # Collection (Application)            222
+    # Vendor Usage 2 report ID (17)
+    echo -ne \\x85\\x11                   #  Report ID (17)                     224
+    echo -ne \\x75\\x08                   #  Report Size (8)                    226
+    echo -ne \\x95\\x13                   #  Report Count (19)                  228
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                230
+    echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              232
+    echo -ne \\x09\\x02                   #  Usage (Vendor Usage 2)             235
+    echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               237
+    echo -ne \\x09\\x02                   #  Usage (Vendor Usage 2)             239
+    echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              241
+    # Vendor Usage 2 end
+    echo -ne \\xc0                        # End Collection                      243
+  
+    # Vendor Usage 0x04 start
+    echo -ne \\x06\\x00\\xff              # Usage Page (Vendor Defined Page 1)  244
+    echo -ne \\x09\\x04                   # Usage (Vendor Usage 0x04)           247
+    echo -ne \\xa1\\x01                   # Collection (Application)            249
+    # Vendor Usage 0x04 report ID (32)
+    echo -ne \\x85\\x20                   #  Report ID (32)                     251
+    echo -ne \\x75\\x08                   #  Report Size (8)                    253
+    echo -ne \\x95\\x0e                   #  Report Count (14)                  255
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                257
+    echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              259
+    echo -ne \\x09\\x41                   #  Usage (Vendor Usage 0x41)          262
+    echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               264
+    echo -ne \\x09\\x41                   #  Usage (Vendor Usage 0x41)          266
+    echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              268
+    # Vendor Usage 0x04 report ID (33)
+    echo -ne \\x85\\x21                   #  Report ID (33)                     270
+    echo -ne \\x95\\x1f                   #  Report Count (31)                  272
+    echo -ne \\x15\\x00                   #  Logical Minimum (0)                274
+    echo -ne \\x26\\xff\\x00              #  Logical Maximum (255)              276
+    echo -ne \\x09\\x42                   #  Usage (Vendor Usage 0x42)          279
+    echo -ne \\x81\\x00                   #  Input (Data,Arr,Abs)               281
+    echo -ne \\x09\\x42                   #  Usage (Vendor Usage 0x42)          283
+    echo -ne \\x91\\x00                   #  Output (Data,Arr,Abs)              285
+    # Vendor Usage 0x04 end
+    echo -ne \\xc0                        # End Collection                      287
+  } >> "$tmp_report_desc"
+  cp "$tmp_report_desc" "${USB_GADGET_FUNCTION_KBM_DIR}/report_desc"
+  rm -f "$tmp_report_desc"
+
+  # Microphone function
+  USB_GADGET_FUNCTION_AUDIO="uac1.usb0"
+  USB_GADGET_FUNCTION_AUDIO_DIR="${USB_GADGET_FUNCTIONS_DIR}/${USB_GADGET_FUNCTION_AUDIO}"
+  mkdir -p "${USB_GADGET_FUNCTION_AUDIO_DIR}"
+
+  # Basic parameters for microphone
+  echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_chmask"   # 1 channel (mono)
+  echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_srate" # 16kHz sample rate
+  echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/c_ssize"     # 2 bytes per sample (16-bit sample size)
+
+  echo 1 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_chmask"   # 1 channel (mono)
+  echo 16000 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_srate" # 16kHz sample rate
+  echo 2 > "${USB_GADGET_FUNCTION_AUDIO_DIR}/p_ssize"     # 2 bytes per sample (16-bit sample size)
+
+  USB_GADGET_CONFIGS_DIR="${USB_GADGET_DIR}/configs"
+  echo "Creating USB gadget configs directory ${USB_GADGET_CONFIGS_DIR}..."
+  mkdir -p "${USB_GADGET_CONFIGS_DIR}"
+
+  USB_GADGET_CONFIG_INDEX_FIRST=1
+  USB_GADGET_CONFIG_DIR_FIRST="${USB_GADGET_CONFIGS_DIR}/c.${USB_GADGET_CONFIG_INDEX_FIRST}"
+  echo "Creating USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} directory ${USB_GADGET_CONFIG_DIR_FIRST}..."
+  mkdir -p "${USB_GADGET_CONFIG_DIR_FIRST}"
+
+  # declares how much power the config needs (e.g. 250 mA)
+  echo "Configuring USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} (MaxPower)..."
+  echo 250 > "${USB_GADGET_CONFIG_DIR_FIRST}/MaxPower"
+
+  USB_GADGET_CONFIG_STRINGS_DIR_FIRST="${USB_GADGET_CONFIG_DIR_FIRST}/strings/0x409"
+  echo "Creating USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} strings directory ${USB_GADGET_CONFIG_STRINGS_DIR_FIRST}..."
+  mkdir -p "${USB_GADGET_CONFIG_STRINGS_DIR_FIRST}"
+
+  # declares human-readable name for this configuration
+  echo "Configuring USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST} strings (configuration)..."
+  echo "Config ${USB_GADGET_CONFIG_INDEX_FIRST}: HID gadget" > "${USB_GADGET_CONFIG_STRINGS_DIR_FIRST}/configuration"
+
+  echo "Binding USB gadget function ${USB_GADGET_FUNCTION_KBM} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
+  ln -s "${USB_GADGET_FUNCTION_KBM_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
+
+  echo "Binding USB gadget function ${USB_GADGET_FUNCTION_AUDIO} to USB gadget config ${USB_GADGET_CONFIG_INDEX_FIRST}..."
+  ln -s "${USB_GADGET_FUNCTION_AUDIO_DIR}" "${USB_GADGET_CONFIG_DIR_FIRST}/"
+
+  # wait for UDC
+  echo "Binding USB Device Controllers to UDC..."
+  UDC_DEVICE=""
+  for i in {1..100}; do
+    UDC_DEVICE="$(ls ${UDC_DIR} 2>/dev/null | head -n 1 || true)"
+    [ -n "${UDC_DEVICE}" ] && break
+    sleep 0.1
+  done
+
+  if [ -z "${UDC_DEVICE}" ]; then
+    echo "ERROR: No UDC configfs attribute file found"
+    exit 1
+  fi
+
+  echo "$UDC_DEVICE" > "${USB_GADGET_UDC}"
+
+  echo "Waiting for udev to process HID gadget devices..."
+  udevadm trigger --subsystem-match=usb --action=add || true
+  udevadm settle --timeout=10 || true
+
+  echo "Giving rights to exposed ${USB_GADGET_DEVICE} device..."
+  for i in {1..100}; do
+    if [ -c "${USB_GADGET_DEVICE}" ]; then
+      chmod 777 "${USB_GADGET_DEVICE}"
+      break
+    fi
+    sleep 0.1
+  done
+
+  if [ ! -c "${USB_GADGET_DEVICE}" ]; then
+    echo "ERROR: HID gadget device ${USB_GADGET_DEVICE} was not created"
+    exit 1
+  fi
+  
+  echo "USB gadget sucessfully created"
+}
+
+case "${1:-start}" in
+  start)
+    stop_gadget
+    start_gadget
+    ;;
+  stop)
+    stop_gadget
+    ;;
+  restart)
+    stop_gadget
+    start_gadget
+    ;;
+esac

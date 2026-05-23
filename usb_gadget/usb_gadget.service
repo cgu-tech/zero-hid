@@ -1,14 +1,30 @@
 [Unit]
-Description=Init usb gadget (zero-hid)
-DefaultDependencies=no
-After=sysinit.target local-fs.target
-Before=basic.target
+Description=USB Gadget (Zero HID Composite)
+
+# Only ensure kernel + configfs are available
+Requires=systemd-modules-load.service systemd-udevd.service
+After=systemd-modules-load.service systemd-udevd.service local-fs.target
+
+ConditionPathExists=/sys/kernel/config
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/init_usb_gadget
-TimeoutSec=0
 RemainAfterExit=yes
+TimeoutSec=60
+
+# ONLY synchronization barrier (no teardown logic here)
+ExecStartPre=/usr/bin/udevadm settle --timeout=10
+
+# Full lifecycle delegated to script
+ExecStart=/usr/bin/init_usb_gadget
+
+# Let script handle cleanup
+ExecStop=/usr/bin/init_usb_gadget --stop
+
+# Optional reload = full restart of gadget (script owns logic)
+ExecReload=/usr/bin/init_usb_gadget --restart
+
+Restart=no
 
 [Install]
-WantedBy=basic.target
+WantedBy=multi-user.target
