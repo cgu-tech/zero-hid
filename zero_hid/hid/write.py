@@ -40,7 +40,7 @@ def _write_to_hid_interface_immediately(hid, buffer):
                 raise
 
             except OSError as osEx:
-                if osEx.errno != errno.EPIPE and osEx.errno != 108:
+                if osEx.errno != errno.EPIPE and osEx.errno != errno.ESHUTDOWN:
                     raise
 
                 if attempt < max_attempts:
@@ -64,11 +64,11 @@ def write_to_hid_interface(hid, buffer):
     try:
         # Wait for at most 0.5 seconds
         future.result(timeout=0.5)
-    except FuturesTimeoutError:
+    except FuturesTimeoutError as ftEx:
         future.cancel()
         raise WriteError(
             f"Timed out writing to HID interface: {hid_file}. Is USB cable connected and Gadget module installed? check https://git.io/J1T7Q"
-        )
+        ) from ftEx
     except Exception as ex:
         raise WriteError(
             f"Failed to write to HID interface: {hid_file}. Reason: {ex}"
